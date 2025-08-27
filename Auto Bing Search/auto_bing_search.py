@@ -33,8 +33,15 @@ def mac_open_automation():
 SYSTEM = platform.system()
 IS_MAC = SYSTEM == "Darwin"
 IS_WIN = SYSTEM == "Windows"
-
 IS_LINUX = SYSTEM == "Linux"
+
+if IS_WIN:
+    try:
+        import keyboard as kb_win
+    except Exception:
+        kb_win = None
+else:
+    kb_win = None
 
 APP_USER_MODEL_ID = "com.autobingsearch.app"
 
@@ -547,6 +554,8 @@ class WindowsGlobalEsc:
         self.thread = None
         self.thread_id = None
         self._stop = threading.Event()
+        self._ready = threading.Event()
+        self._ok = False
 
     def start(self):
         if not IS_WIN:
@@ -557,7 +566,6 @@ class WindowsGlobalEsc:
         except Exception as e:
             return False, str(e)
 
-        # pointer-sized types
         try:
             ULONG_PTR = wintypes.ULONG_PTR
         except AttributeError:
@@ -592,7 +600,6 @@ class WindowsGlobalEsc:
                         ("time", wintypes.DWORD),
                         ("dwExtraInfo", ULONG_PTR)]
 
-        # Proper prototypes
         LRESULT = ctypes.c_longlong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_long
         HOOKPROC = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, WPARAM, LPARAM)
         user32.SetWindowsHookExW.argtypes = [ctypes.c_int, HOOKPROC, wintypes.HINSTANCE, wintypes.DWORD]
@@ -622,10 +629,11 @@ class WindowsGlobalEsc:
             hinst = kernel32.GetModuleHandleW(None)
             self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, hinst, 0)
             if not self.hooked:
-                # try with NULL hinst as a fallback
                 self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, None, 0)
-                if not self.hooked:
-                    return
+            self._ok = bool(self.hooked)
+            self._ready.set()
+            if not self.hooked:
+                return
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
                 user32.TranslateMessage(ctypes.byref(msg))
@@ -637,9 +645,30 @@ class WindowsGlobalEsc:
         try:
             self.thread = threading.Thread(target=loop, daemon=True)
             self.thread.start()
+            self._ready.wait(1.5)
+            return (True, "OK") if self._ok else (False, "Hook install failed")
+        except Exception as e:
+            return False, str(e)
+# Windows keyboard library ESC monitor
+class WindowsKeyboardEsc:
+    def __init__(self, callback):
+        self.callback = callback
+        self._hook = None
+    def start(self):
+        if not IS_WIN or kb_win is None:
+            return False, "keyboard not available"
+        try:
+            self._hook = kb_win.on_press_key('esc', lambda e: QTimer.singleShot(0, self.callback))
             return True, "OK"
         except Exception as e:
             return False, str(e)
+    def stop(self):
+        try:
+            if self._hook is not None and kb_win is not None:
+                kb_win.unhook(self._hook)
+        except Exception:
+            pass
+        self._hook = None
 
     def stop(self):
         if not IS_WIN:
@@ -984,8 +1013,15 @@ class MainWindow(QMainWindow):
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             elif IS_WIN:
-                self.global_esc = WindowsGlobalEsc(self.on_stop)
-                esc_ok, esc_msg = self.global_esc.start()
+                if kb_win is not None:
+                    self.global_esc = WindowsKeyboardEsc(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
+                    if not esc_ok:
+                        self.global_esc = WindowsGlobalEsc(self.on_stop)
+                        esc_ok, esc_msg = self.global_esc.start()
+                else:
+                    self.global_esc = WindowsGlobalEsc(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()

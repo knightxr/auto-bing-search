@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Auto Bing Search — Download</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root{
+        --bg:#0f1115;
+        --card:#171a21;
+        --border:#2a2f3a;
+        --text:#e6e6e6;
+        --muted:#a9b0bb;
+        --accent:#2d6cdf;
+        --accent2:#34d399;
+      }
+      *{box-sizing:border-box}
+      body{
+        font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+        margin:0;display:grid;place-items:center;min-height:100dvh;
+        background:var(--bg);color:var(--text);padding:18px
+      }
+      .card{
+        background:var(--card);
+        border:1px solid var(--border);
+        border-radius:14px;
+        padding:24px;
+        width:min(820px,100%);
+      }
+      h1{margin:0 0 8px}
+      h2{margin:18px 0 8px;font-size:1.1rem}
+      p{margin:10px 0}
+      ul{margin:6px 0 0 6px; padding-left:12px}
+      li{margin:6px 0}
+      .muted{color:var(--muted)}
+      .stack{display:flex;flex-wrap:wrap;gap:10px}
+      a.button{
+        display:inline-flex;align-items:center;gap:10px;
+        margin-top:8px;padding:10px 16px;border-radius:10px;
+        background:var(--accent);color:#fff;text-decoration:none;border:1px solid #315fdd
+      }
+      a.button.secondary{
+        background:var(--accent2);border-color:#2ab081;color:#0a1316
+      }
+      .button img,.button svg{width:18px;height:18px;display:inline-block}
+      code{background:#1b1e25;border-radius:6px;padding:2px 6px}
+      pre{background:#1b1e25;border:1px solid var(--border);border-radius:10px;padding:10px;overflow:auto}
+      .callout{
+        border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:#1b1e25;margin-top:10px
+      }
+      .small{font-size:.95rem}
+      .grid{display:grid;gap:16px}
+      @media (min-width:760px){
+        .grid{grid-template-columns:1fr 1fr}
+      }
+      .footer{margin-top:28px}
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Auto Bing Search</h1>
+      <p class="muted">Download the app for your OS and follow the quick-start steps below.</p>
+
+      <div class="stack">
+        <a class="button secondary" href="https://github.com/knightxr/auto-bing-search/releases/latest/download/auto-bing-search.dmg">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/apple/apple-original.svg" alt="macOS" />
+          Download for macOS (Universal)
+        </a>
+        <a class="button" href="https://github.com/knightxr/auto-bing-search/releases/latest/download/auto-bing-search.exe">
+          <img src="https://registry.npmmirror.com/@lobehub/icons-static-svg/latest/files/icons/microsoft-color.svg"
+               alt="Windows / Microsoft" style="filter:none" />
+          Download for Windows
+        </a>
+        <a class="button" href="https://github.com/knightxr/auto-bing-search/releases/latest/download/auto-bing-search-linux.tar.gz">
+          <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/linux/linux-original.svg" alt="Linux" />
+          Download for Linux (tar.gz)
+        </a>
+      </div>
+
+      <div class="grid">
+        <section>
+          <h2>How to install</h2>
+          <ul class="small">
+            <li><strong>macOS:</strong> Open the <code>.dmg</code> → drag <em>Auto Bing Search.app</em> into <strong>Applications</strong>. First run: right-click → <em>Open</em>.</li>
+            <li><strong>Windows:</strong> Download the <code>.exe</code> and run it. If SmartScreen appears, choose <em>More info → Run anyway</em>.</li>
+            <li><strong>Linux:</strong> Extract the tarball and run <code>./auto-bing-search</code>.</li>
+          </ul>
+
+          <h2>How to use</h2>
+          <ul class="small">
+            <li>Choose the number of searches, click <strong>Start</strong>.</li>
+            <li>5-second countdown, then 10 seconds between each search.</li>
+            <li><strong>Pause</strong> and <strong>Stop</strong> appear after starting.</li>
+            <li>Press <strong>Esc</strong> to stop (works unfocused once permissions are granted).</li>
+            <li>Use the pin to keep the window on top.</li>
+            <li>Hold <strong>Shift</strong> when clicking Start to show the login prompt again.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Permissions</h2>
+          <div class="callout small">
+            <p><strong>macOS:</strong> grant these in <em>System Settings → Privacy &amp; Security</em>:</p>
+            <ul>
+              <li>Accessibility</li>
+              <li>Input Monitoring</li>
+            </ul>
+            <p class="muted">Grant them to the <em>installed</em> app in Applications.</p>
+          </div>
+
+          <div class="callout small">
+            <p><strong>Linux:</strong> for full automation, an <strong>Xorg</strong> session works best (some Wayland sessions limit global hotkeys).</p>
+          </div>
+        </section>
+      </div>
+
+      <h2>Troubleshooting</h2>
+      <ul class="small">
+        <li><strong>Esc doesn’t stop on macOS:</strong> confirm the app has Accessibility &amp; Input Monitoring permissions.</li>
+        <li><strong>Nothing types on Linux:</strong> switch to an Xorg session and ensure common Qt/X11 libs are installed.</li>
+        <li><strong>Edge isn’t used:</strong> the app prefers Edge when present, otherwise your default browser opens.</li>
+      </ul>
+
+      <p class="small muted footer">Source: <a href="https://github.com/knightxr/auto-bing-search">github.com/knightxr/auto-bing-search</a></p>
+    </main>
+  </body>
+</html>

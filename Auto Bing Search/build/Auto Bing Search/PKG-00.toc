@@ -38,31 +38,15 @@
    'PYMODULE'),
   ('pyiboot01_bootstrap',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/loader/pyiboot01_bootstrap.py',
+   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/loader/pyiboot01_bootstrap.py',
    'PYSOURCE'),
   ('pyi_rth_inspect',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_inspect.py',
-   'PYSOURCE'),
-  ('pyi_rth_pkgutil',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_pkgutil.py',
-   'PYSOURCE'),
-  ('pyi_rth_multiprocessing',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_multiprocessing.py',
-   'PYSOURCE'),
-  ('pyi_rth__tkinter',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth__tkinter.py',
-   'PYSOURCE'),
-  ('pyi_rth_setuptools',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_setuptools.py',
+   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_inspect.py',
    'PYSOURCE'),
   ('pyi_rth_pyside6',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_pyside6.py',
+   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_pyside6.py',
    'PYSOURCE'),
   ('auto_bing_search',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -73,6 +57,6 @@
  False,
  False,
  [],
- 'arm64',
+ 'universal2',
  None,
  None)

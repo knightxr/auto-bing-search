@@ -1,0 +1,63 @@
+name: Build Windows App
+
+on:
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: Auto Bing Search
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Clean any previous spec
+        shell: pwsh
+        run: |
+          Remove-Item -Force *.spec -ErrorAction SilentlyContinue
+
+      - name: Ensure multi-size ICO exists (optional check)
+        shell: pwsh
+        run: |
+          python - << 'PY'
+          from PIL import Image
+          from pathlib import Path
+          p = Path("assets/app.ico")
+          if not p.exists():
+              img = Image.open("assets/app.png").convert("RGBA")
+              sizes = [(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)]
+              img.save(p, sizes=sizes)
+              print("Created assets/app.ico")
+          else:
+              print("assets/app.ico already present")
+          PY
+
+      - name: Build (one-file EXE with icon)
+        shell: pwsh
+        run: >
+          pyinstaller --onefile --noconsole --windowed
+          --name "Auto Bing Search"
+          --icon assets\app.ico
+          --add-data "assets;assets"
+          auto_bing_search.py
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-bing-search-windows
+          path: Auto Bing Search\dist\Auto Bing Search.exe

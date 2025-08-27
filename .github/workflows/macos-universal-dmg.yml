@@ -1,0 +1,61 @@
+name: Build macOS App (Universal DMG)
+on:
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    working-directory: Auto Bing Search
+
+jobs:
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Use the hosted Python (3.12). On macOS runners this is typically universal2.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Build Universal 2 .app
+        run: |
+          pyinstaller --clean --noconsole --windowed \
+            --target-arch universal2 \
+            --name "Auto Bing Search" \
+            --icon assets/app.icns \
+            --add-data "assets:assets" \
+            auto_bing_search.py
+
+      - name: Verify universal binary
+        run: |
+          file "dist/Auto Bing Search.app/Contents/MacOS/Auto Bing Search"
+          file "dist/Auto Bing Search.app/Contents/MacOS/Auto Bing Search" | grep -E "x86_64.*arm64"
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG (drag-and-drop)
+        run: |
+          rm -f "dist/Auto Bing Search.dmg"
+          create-dmg \
+            --volname "Auto Bing Search" \
+            --volicon "assets/app.icns" \
+            --window-pos 200 120 \
+            --window-size 540 380 \
+            --icon-size 110 \
+            --app-drop-link 420 200 \
+            --icon "Auto Bing Search.app" 120 200 \
+            "dist/Auto Bing Search.dmg" \
+            "dist/Auto Bing Search.app"
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-bing-search-mac-universal-dmg
+          path: dist/Auto Bing Search.dmg

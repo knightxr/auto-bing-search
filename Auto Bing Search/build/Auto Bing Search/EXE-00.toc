@@ -45,15 +45,15 @@
    'PYMODULE'),
   ('pyiboot01_bootstrap',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/loader/pyiboot01_bootstrap.py',
+   'Search/.venv/lib/python3.12/site-packages/PyInstaller/loader/pyiboot01_bootstrap.py',
    'PYSOURCE'),
   ('pyi_rth_inspect',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_inspect.py',
+   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_inspect.py',
    'PYSOURCE'),
   ('pyi_rth_pyside6',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_pyside6.py',
+   'Search/.venv/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_pyside6.py',
    'PYSOURCE'),
   ('auto_bing_search',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -62,9 +62,9 @@
  [],
  False,
  False,
- 1756260585,
+ 1756332924,
  [('runw',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv-universal/lib/python3.12/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',
+   'Search/.venv/lib/python3.12/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',
    'EXECUTABLE')],
  '/Library/Frameworks/Python.framework/Versions/3.12/Python')

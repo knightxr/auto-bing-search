@@ -10,7 +10,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['PIL', 'Pillow', 'pyautogui'],
+    excludes=['PIL', 'Pillow', 'pyscreeze', 'pyautogui'],
     noarchive=False,
     optimize=0,
 )

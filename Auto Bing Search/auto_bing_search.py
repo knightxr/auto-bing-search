@@ -1,4 +1,5 @@
 import os, sys, time, random, platform, shutil, subprocess, webbrowser, threading
+from urllib.parse import quote_plus
 from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QSettings
 from PySide6.QtGui import (
     QPalette, QColor, QFont, QPainter, QLinearGradient, QPen, QPixmap, QIcon, QShortcut, QKeySequence
@@ -8,17 +9,24 @@ from PySide6.QtWidgets import (
     QFrame, QMessageBox, QGraphicsDropShadowEffect, QDialog, QCheckBox, QSizePolicy
 )
 
-# Optional global ESC hotkey (cross‑platform)
 try:
     from pynput import keyboard as pynput_keyboard
 except Exception:
     pynput_keyboard = None
 
-# macOS: open the specific Privacy pane for Input Monitoring
 def mac_open_input_monitoring():
     if IS_MAC:
         try:
             subprocess.run(["open", "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent"], check=False)
+        except Exception:
+            pass
+def mac_open_automation():
+    if IS_MAC:
+        try:
+            subprocess.run([
+                "open",
+                "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"
+            ], check=False)
         except Exception:
             pass
 
@@ -80,7 +88,6 @@ else:
     NSEvent = None
     _NSEventMaskKeyDown = 1 << 10
 
-# Import pyautogui on Win/Linux (macOS uses AppleScript)
 if not IS_MAC:
     try:
         import pyautogui
@@ -93,10 +100,6 @@ if not IS_MAC:
 BING_HOME   = "https://www.bing.com"
 BING_SIGNIN = "https://login.live.com/"
 
-# -----------------------------------------------------------------------------------
-# WORDS: paste your full list here if you want it embedded. The spacing in code is
-# visual only; to tidy quickly in VS Code, use regex find:  ,\\s+  →  ,  (one space).
-# -----------------------------------------------------------------------------------
 random_words = [
     "nebula", "quasar", "supernova", "asteroid", "galaxy", "comet", "orbit", "pulsar", "atom", "molecule",
     "gravity", "neutron", "photosynthesis", "quantum", "entropy", "enzyme", "proton", "electron", "isotope", "plasma",
@@ -212,9 +215,16 @@ def open_browser(prefer_edge=True, url=BING_HOME):
     if not used_edge:
         webbrowser.open(url, new=1)
 
-# ---------- macOS AppleScript ----------
+# macOS AppleScript
 def _osa(script: str):
-    return subprocess.run(["osascript", "-e", script], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        return subprocess.run(["osascript", "-e", script], check=True,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        err = e.stderr.decode("utf-8", errors="ignore") if e.stderr else str(e)
+        if "Not authorized" in err or "not authorized" in err or "Not permitted" in err:
+            mac_open_automation()
+        raise RuntimeError(err or "AppleScript failed") from e
 
 def mac_app_exists(name: str) -> bool:
     return os.path.exists(f"/Applications/{name}.app")
@@ -263,7 +273,7 @@ def mac_preflight_access():
     except FileNotFoundError:
         return False, "osascript not found."
 
-# ---------- Win/Linux helpers ----------
+# Win/Linux helpers
 def wl_preflight():
     try:
         _ = pyautogui.size(); _ = pyautogui.position(); return True, "OK"
@@ -288,29 +298,134 @@ def human_type_pyautogui(term: str):
         if random.random() < 0.06:
             time.sleep(random.uniform(0.12, 0.28))
 
-# ---------- Automation ----------
+# Try to focus Bing's on-page search box on Win/Linux
+def _focus_bing_box_win_linux():
+    try:
+        # click near the top-center within the active window; adjust Y so it hits the results-page box too
+        win = getattr(pyautogui, "getActiveWindow", lambda: None)()
+        if win and getattr(win, "box", None):
+            x, y, w, h = win.left, win.top, win.width, win.height
+            # place click around ~14% of window height from the top, clamped sensibly
+            pyautogui.click(x + w // 2, y + int(min(190, max(110, h * 0.14))))
+        else:
+            sw, sh = pyautogui.size()
+            pyautogui.click(sw // 2, int(sh * 0.22))
+        time.sleep(0.15)
+        # select-all and clear once in case selection didn't stick
+        pyautogui.hotkey('ctrl', 'a')
+        time.sleep(0.05)
+        pyautogui.press('backspace')
+        time.sleep(0.04)
+    except Exception:
+        pass
+
+# Automation
 class Automator:
     def __init__(self):
         self.browser_mac = mac_pick_browser() if IS_MAC else None
+        self._first = True
+        self._launched = False
+        self._first_search = True
 
     def open_and_ready(self):
-        open_browser(prefer_edge=True, url=BING_HOME)
-        time.sleep(2.2)
-        if IS_MAC: mac_activate(self.browser_mac)
+        if not self._launched:
+            open_browser(prefer_edge=True, url=BING_HOME)
+            self._launched = True
+            # give the first page a moment to settle
+            time.sleep(2.4)
+            if IS_MAC:
+                mac_activate(self.browser_mac)
+
+    def _focus_bing_box_mac(self) -> bool:
+        try:
+            _osa(
+                f'''
+                tell application "{self.browser_mac}"
+                    if (count of windows) = 0 then return
+                    tell front window's active tab to do javascript (
+                        "(function(){{var el=document.getElementById('sb_form_q')||document.querySelector('input[name=q],input[type=search]'); if(el){{el.focus(); el.select(); try{{el.value='';}}catch(e){{}}}} return true;}})()"
+                    )
+                end tell
+                '''
+            )
+            return True
+        except Exception:
+            return False
+
+    def _mac_set_front_url(self, url: str):
+        try:
+            if self.browser_mac == "Safari":
+                _osa(f'set URL of front document of application "Safari" to "{url}"')
+            else:
+                _osa(
+                    f'tell application "{self.browser_mac}" to tell front window to set URL of active tab to "{url}"'
+                )
+            return True
+        except Exception:
+            return False
+
+    def _bing_url(self, term: str) -> str:
+        return f"{BING_HOME}/search?q={quote_plus(term)}"
 
     def search_once(self, term: str):
+        """Type into Bing's search box in the SAME TAB. For the first search, ensure focus; thereafter use the results-page auto-focus behavior (any letter focuses the box), then Ctrl/Cmd+A and type. Falls back to direct URL if something goes wrong."""
         if IS_MAC:
-            mac_activate(self.browser_mac)
-            time.sleep(0.12)
-            mac_focus_omnibox()
-            time.sleep(0.08)
-            mac_type_human(term)
-            mac_press_return()
-        else:
-            pyautogui.hotkey("ctrl" if (IS_WIN or IS_LINUX) else "command", "l")
-            time.sleep(0.06)
+            try:
+                mac_activate(self.browser_mac)
+                time.sleep(0.10)
+                if self._first_search:
+                    # Make sure the page input is focused and cleared on the first run
+                    if not self._focus_bing_box_mac():
+                        self._mac_set_front_url(BING_HOME)
+                        time.sleep(1.4)
+                        self._focus_bing_box_mac()
+                    mac_type_human(term)
+                    mac_press_return()
+                    self._first_search = False
+                    return
+                # On Bing results pages, any letter focuses the box. Then Cmd+A to clear, type, Enter.
+                _osa('tell application "System Events" to keystroke "a"')
+                _osa('tell application "System Events" to keystroke "a" using command down')
+                mac_type_human(term)
+                mac_press_return()
+                return
+            except Exception:
+                # Fallback: same-tab navigation to the results URL
+                try:
+                    self._mac_set_front_url(self._bing_url(term))
+                    self._first_search = False
+                    return
+                except Exception:
+                    open_browser(prefer_edge=True, url=self._bing_url(term))
+                    self._first_search = False
+                    return
+
+        # Windows / Linux
+        try:
+            if self._first_search:
+                _focus_bing_box_win_linux()
+                human_type_pyautogui(term)
+                pyautogui.press('enter')
+                self._first_search = False
+                return
+            # Results-page trick: any letter focuses the box, then Ctrl+A, type, Enter
+            pyautogui.typewrite('a')
+            time.sleep(0.05)
+            pyautogui.hotkey('ctrl', 'a')
+            time.sleep(0.05)
             human_type_pyautogui(term)
-            pyautogui.press("enter")
+            pyautogui.press('enter')
+        except Exception:
+            # Same-tab fallback via Ctrl+L -> results URL
+            try:
+                from urllib.parse import quote_plus as _qp
+                pyautogui.hotkey('ctrl', 'l')
+                time.sleep(0.08)
+                pyautogui.typewrite(f"{BING_HOME}/search?q={_qp(term)}", interval=0.02)
+                pyautogui.press('enter')
+                self._first_search = False
+            except Exception:
+                pass
 
 # ---------- Worker ----------
 class SearchWorker(QThread):
@@ -430,7 +545,87 @@ class MacGlobalEsc:
                 pass
             self.globalMonitor = None
 
-# ---------- UI ----------
+# Windows: low-level keyboard hook for global ESC
+class WindowsGlobalEsc:
+    def __init__(self, callback):
+        self.callback = callback
+        self.hooked = None
+        self.thread = None
+        self.thread_id = None
+        self._stop = threading.Event()
+
+    def start(self):
+        if not IS_WIN:
+            return False, "Windows only"
+        try:
+            import ctypes
+            from ctypes import wintypes
+        except Exception as e:
+            return False, str(e)
+        user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
+        WH_KEYBOARD_LL = 13
+        WM_KEYDOWN = 0x0100
+        WM_SYSKEYDOWN = 0x0104
+        WM_QUIT = 0x0012
+        VK_ESCAPE = 0x1B
+
+        class KBDLLHOOKSTRUCT(ctypes.Structure):
+            _fields_ = [("vkCode", wintypes.DWORD),
+                        ("scanCode", wintypes.DWORD),
+                        ("flags", wintypes.DWORD),
+                        ("time", wintypes.DWORD),
+                        ("dwExtraInfo", wintypes.ULONG_PTR)]
+
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
+
+        @LowLevelKeyboardProc
+        def hook_proc(nCode, wParam, lParam):
+            try:
+                if nCode >= 0 and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
+                    kb = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
+                    if kb.vkCode == VK_ESCAPE:
+                        QTimer.singleShot(0, self.callback)
+            except Exception:
+                pass
+            return user32.CallNextHookEx(self.hooked, nCode, wParam, lParam)
+
+        self.hook_proc = hook_proc
+
+        def loop():
+            self.thread_id = kernel32.GetCurrentThreadId()
+            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
+            if not self.hooked:
+                return
+            msg = wintypes.MSG()
+            while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
+                user32.TranslateMessage(ctypes.byref(msg))
+                user32.DispatchMessageW(ctypes.byref(msg))
+            if self.hooked:
+                user32.UnhookWindowsHookEx(self.hooked)
+                self.hooked = None
+
+        try:
+            self.thread = threading.Thread(target=loop, daemon=True)
+            self.thread.start()
+            return True, "OK"
+        except Exception as e:
+            return False, str(e)
+
+    def stop(self):
+        if not IS_WIN:
+            return
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            WM_QUIT = 0x0012
+            self._stop.set()
+            if self.thread_id:
+                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
+        except Exception:
+            pass
+
+# UI
 class GradientWidget(QWidget):
     def paintEvent(self, evt):
         painter = QPainter(self)
@@ -490,7 +685,6 @@ class SigninDialog(QDialog):
         sub.setFont(sf); sub.setStyleSheet("color:#e6f0ff;")
         sub.setAlignment(Qt.AlignHCenter)
 
-        # remember checkbox inside dialog
         self.chk = QCheckBox("Remember my choice")
         self.chk.setStyleSheet(
             """
@@ -754,13 +948,17 @@ class MainWindow(QMainWindow):
         if not ok:
             QMessageBox.critical(self, "Permission required", msg)
 
-        # Global ESC when unfocused: prefer native AppKit monitor on macOS, else use pynput
         if self.global_esc is None:
             if IS_MAC and NSEvent is not None:
                 self.global_esc = MacGlobalEsc(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    # fallback to pynput listener
+                    self.global_esc = GlobalEsc(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
+            elif IS_WIN:
+                self.global_esc = WindowsGlobalEsc(self.on_stop)
+                esc_ok, esc_msg = self.global_esc.start()
+                if not esc_ok:
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:

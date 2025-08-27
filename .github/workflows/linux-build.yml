@@ -1,5 +1,4 @@
 name: Build Linux App
-
 on:
   workflow_dispatch: {}
 
@@ -17,7 +16,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install system libs
+      - name: Install system libs for Qt/PySide6
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
@@ -31,7 +30,7 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller
 
-      - name: Build
+      - name: Build one-file binary
         run: |
           pyinstaller --onefile --noconsole --windowed \
             --name auto-bing-search \
@@ -39,8 +38,20 @@ jobs:
             --add-data "assets:assets" \
             auto_bing_search.py
 
+      - name: Make tar.gz (keeps exec bit)
+        run: |
+          cd dist
+          tar czf auto-bing-search-linux.tar.gz auto-bing-search
+          cd ..
+
       - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: auto-bing-search-linux
-          path: "Auto Bing Search/dist/auto-bing-search"
+          name: auto-bing-search-linux-bin
+          path: dist/auto-bing-search
+
+      - name: Upload tar.gz
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-bing-search-linux-tar
+          path: dist/auto-bing-search-linux.tar.gz

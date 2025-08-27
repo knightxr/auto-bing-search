@@ -23,65 +23,37 @@
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/networkinformation/libqscnetworkreachability.dylib',
    'BINARY'),
-  ('PySide6/Qt/plugins/tls/libqsecuretransportbackend.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/tls/libqsecuretransportbackend.dylib',
-   'BINARY'),
   ('PySide6/Qt/plugins/tls/libqcertonlybackend.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/tls/libqcertonlybackend.dylib',
    'BINARY'),
-  ('PySide6/Qt/plugins/platforms/libqminimal.dylib',
+  ('PySide6/Qt/plugins/tls/libqsecuretransportbackend.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/platforms/libqminimal.dylib',
-   'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqjpeg.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqjpeg.dylib',
-   'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqsvg.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqsvg.dylib',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/tls/libqsecuretransportbackend.dylib',
    'BINARY'),
   ('PySide6/Qt/plugins/imageformats/libqwebp.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqwebp.dylib',
    'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqmacjp2.dylib',
+  ('PySide6/Qt/plugins/platforms/libqoffscreen.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqmacjp2.dylib',
-   'BINARY'),
-  ('PySide6/Qt/plugins/generic/libqtuiotouchplugin.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/generic/libqtuiotouchplugin.dylib',
-   'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqwbmp.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqwbmp.dylib',
-   'BINARY'),
-  ('PySide6/Qt/plugins/platforms/libqcocoa.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/platforms/libqcocoa.dylib',
-   'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqtiff.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqtiff.dylib',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/platforms/libqoffscreen.dylib',
    'BINARY'),
   ('PySide6/Qt/plugins/imageformats/libqico.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqico.dylib',
    'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqpdf.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqpdf.dylib',
-   'BINARY'),
   ('PySide6/Qt/plugins/iconengines/libqsvgicon.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/iconengines/libqsvgicon.dylib',
    'BINARY'),
-  ('PySide6/Qt/plugins/imageformats/libqgif.dylib',
+  ('PySide6/Qt/plugins/imageformats/libqtiff.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqgif.dylib',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqtiff.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/imageformats/libqpdf.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqpdf.dylib',
    'BINARY'),
   ('PySide6/Qt/plugins/imageformats/libqmacheif.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -91,13 +63,41 @@
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqicns.dylib',
    'BINARY'),
+  ('PySide6/Qt/plugins/imageformats/libqwbmp.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqwbmp.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/imageformats/libqsvg.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqsvg.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/imageformats/libqgif.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqgif.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/imageformats/libqmacjp2.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqmacjp2.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/imageformats/libqjpeg.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqjpeg.dylib',
+   'BINARY'),
   ('PySide6/Qt/plugins/imageformats/libqtga.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/imageformats/libqtga.dylib',
    'BINARY'),
-  ('PySide6/Qt/plugins/platforms/libqoffscreen.dylib',
+  ('PySide6/Qt/plugins/platforms/libqminimal.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/platforms/libqoffscreen.dylib',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/platforms/libqminimal.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/platforms/libqcocoa.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/platforms/libqcocoa.dylib',
+   'BINARY'),
+  ('PySide6/Qt/plugins/generic/libqtuiotouchplugin.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/plugins/generic/libqtuiotouchplugin.dylib',
    'BINARY'),
   ('PySide6/Qt/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -139,6 +139,15 @@
   ('lib-dynload/resource.cpython-312-darwin.so',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/resource.cpython-312-darwin.so',
    'EXTENSION'),
+  ('lib-dynload/unicodedata.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/unicodedata.cpython-312-darwin.so',
+   'EXTENSION'),
+  ('lib-dynload/_heapq.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_heapq.cpython-312-darwin.so',
+   'EXTENSION'),
+  ('lib-dynload/_pickle.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_pickle.cpython-312-darwin.so',
+   'EXTENSION'),
   ('lib-dynload/_multibytecodec.cpython-312-darwin.so',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_multibytecodec.cpython-312-darwin.so',
    'EXTENSION'),
@@ -151,9 +160,6 @@
   ('lib-dynload/_codecs_iso2022.cpython-312-darwin.so',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_codecs_iso2022.cpython-312-darwin.so',
    'EXTENSION'),
-  ('lib-dynload/unicodedata.cpython-312-darwin.so',
-   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/unicodedata.cpython-312-darwin.so',
-   'EXTENSION'),
   ('lib-dynload/_codecs_cn.cpython-312-darwin.so',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_codecs_cn.cpython-312-darwin.so',
    'EXTENSION'),
@@ -162,12 +168,6 @@
    'EXTENSION'),
   ('lib-dynload/_codecs_hk.cpython-312-darwin.so',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_codecs_hk.cpython-312-darwin.so',
-   'EXTENSION'),
-  ('lib-dynload/_heapq.cpython-312-darwin.so',
-   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_heapq.cpython-312-darwin.so',
-   'EXTENSION'),
-  ('lib-dynload/_pickle.cpython-312-darwin.so',
-   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_pickle.cpython-312-darwin.so',
    'EXTENSION'),
   ('AppKit/_inlines.cpython-312-darwin.so',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -328,17 +328,17 @@
   ('lib-dynload/_random.cpython-312-darwin.so',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_random.cpython-312-darwin.so',
    'EXTENSION'),
-  ('PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore',
+  ('PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets',
    'BINARY'),
   ('PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui',
    'BINARY'),
-  ('PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets',
+  ('PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore',
    'BINARY'),
   ('PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -352,17 +352,17 @@
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtPdf.framework/Versions/A/QtPdf',
    'BINARY'),
-  ('PySide6/Qt/lib/QtQuick.framework/Versions/A/QtQuick',
+  ('PySide6/Qt/lib/QtQmlMeta.framework/Versions/A/QtQmlMeta',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQuick.framework/Versions/A/QtQuick',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQmlMeta.framework/Versions/A/QtQmlMeta',
+   'BINARY'),
+  ('PySide6/Qt/lib/QtQmlWorkerScript.framework/Versions/A/QtQmlWorkerScript',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQmlWorkerScript.framework/Versions/A/QtQmlWorkerScript',
    'BINARY'),
   ('PySide6/Qt/lib/QtVirtualKeyboardQml.framework/Versions/A/QtVirtualKeyboardQml',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtVirtualKeyboardQml.framework/Versions/A/QtVirtualKeyboardQml',
-   'BINARY'),
-  ('PySide6/Qt/lib/QtVirtualKeyboard.framework/Versions/A/QtVirtualKeyboard',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtVirtualKeyboard.framework/Versions/A/QtVirtualKeyboard',
    'BINARY'),
   ('PySide6/Qt/lib/QtQmlModels.framework/Versions/A/QtQmlModels',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -376,27 +376,27 @@
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQml.framework/Versions/A/QtQml',
    'BINARY'),
-  ('PySide6/Qt/lib/QtQmlWorkerScript.framework/Versions/A/QtQmlWorkerScript',
+  ('PySide6/Qt/lib/QtVirtualKeyboard.framework/Versions/A/QtVirtualKeyboard',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQmlWorkerScript.framework/Versions/A/QtQmlWorkerScript',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtVirtualKeyboard.framework/Versions/A/QtVirtualKeyboard',
    'BINARY'),
-  ('PySide6/Qt/lib/QtQmlMeta.framework/Versions/A/QtQmlMeta',
+  ('PySide6/Qt/lib/QtQuick.framework/Versions/A/QtQuick',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQmlMeta.framework/Versions/A/QtQmlMeta',
-   'BINARY'),
-  ('libssl.3.dylib',
-   '/Library/Frameworks/Python.framework/Versions/3.12/lib/libssl.3.dylib',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/lib/QtQuick.framework/Versions/A/QtQuick',
    'BINARY'),
   ('libcrypto.3.dylib',
    '/Library/Frameworks/Python.framework/Versions/3.12/lib/libcrypto.3.dylib',
    'BINARY'),
-  ('shiboken6/libshiboken6.abi3.6.9.dylib',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/shiboken6/libshiboken6.abi3.6.9.dylib',
+  ('libssl.3.dylib',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/libssl.3.dylib',
    'BINARY'),
   ('PySide6/libpyside6.abi3.6.9.dylib',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/libpyside6.abi3.6.9.dylib',
+   'BINARY'),
+  ('shiboken6/libshiboken6.abi3.6.9.dylib',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/shiboken6/libshiboken6.abi3.6.9.dylib',
    'BINARY'),
   ('PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -414,173 +414,161 @@
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/assets/app.png',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_nl.qm',
+  ('PySide6/Qt/translations/qt_help_fr.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_nl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_sk.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_sk.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_zh_TW.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_zh_TW.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_fr.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_help_bg.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_bg.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_help_hr.qm',
+  ('PySide6/Qt/translations/qt_fa.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_hr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_gl.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_gl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_ko.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ko.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_hr.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_hr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_pl.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_pl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_pl.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_pl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_it.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_it.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_da.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_da.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_sk.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_sk.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_he.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_he.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_lg.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_lg.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_ru.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ru.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_fa.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_fa.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_ru.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ru.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_bg.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_bg.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_hu.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_hu.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_uk.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_uk.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_ca.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ca.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_ar.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ar.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_uk.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_uk.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_tr.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_tr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_ca.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ca.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_en.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_en.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_hu.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_hu.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_nn.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_nn.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_cs.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_cs.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_it.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_it.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_fa.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_cs.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_cs.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_hu.qm',
+  ('PySide6/Qt/translations/qtbase_lv.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_hu.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_lv.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_help_da.qm',
+  ('PySide6/Qt/translations/qt_bg.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_da.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_bg.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_uk.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_uk.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_es.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_es.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_ka.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ka.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_pt_BR.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_pt_BR.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_ja.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ja.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_ru.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ru.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_es.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_es.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_ko.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ko.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_he.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_he.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_ar.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ar.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_ru.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ru.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_nn.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_nn.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_gd.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_gd.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_pl.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_pl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_sv.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_sv.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_tr.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_tr.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_pt_PT.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_pt_PT.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_nl.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_nl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_fa.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_fa.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_en.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_en.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_zh_TW.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_zh_TW.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_it.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_it.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_lt.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_lt.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_lv.qm',
+  ('PySide6/Qt/translations/qtbase_gd.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_lv.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_gd.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_pt_BR.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_pt_BR.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_cs.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_cs.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_pl.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_pl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_sk.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_sk.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_zh_CN.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_zh_CN.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_lg.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_lg.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_ar.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ar.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_help_sl.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_sl.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_help_nn.qm',
+  ('PySide6/Qt/translations/qt_hu.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_nn.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_fr.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_fr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_de.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_de.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_sv.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_sv.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_pt_BR.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_pt_BR.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_hu.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_de.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
@@ -590,235 +578,249 @@
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_hr.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_ru.qm',
+  ('PySide6/Qt/translations/qt_help_ja.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ru.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ja.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_es.qm',
+  ('PySide6/Qt/translations/qt_help_hr.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_es.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_fr.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_fr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_ka.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ka.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_sv.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_sv.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_nn.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_nn.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_fi.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_fi.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_sv.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_sv.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_gd.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_gd.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_nl.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_nl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_zh_TW.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_zh_TW.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_ko.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ko.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_ka.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ka.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_cs.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_cs.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_uk.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_uk.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_gd.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_gd.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_ar.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ar.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_zh_TW.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_zh_TW.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_sk.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_sk.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_pl.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_pl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_fr.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_fr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_nl.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_nl.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_tr.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_tr.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_es.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_es.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_es.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_es.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_da.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_da.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_he.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_he.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_en.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_en.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_zh_CN.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_zh_CN.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_ka.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ka.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_fi.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_fi.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_bg.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_bg.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_help_ca.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ca.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_zh_CN.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_zh_CN.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qtbase_ar.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ar.qm',
-   'DATA'),
-  ('PySide6/Qt/translations/qt_pt_BR.qm',
-   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_pt_BR.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_hr.qm',
    'DATA'),
   ('PySide6/Qt/translations/qtbase_it.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_it.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_pt_BR.qm',
+  ('PySide6/Qt/translations/qt_help_zh_CN.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_pt_BR.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_zh_CN.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_en.qm',
+  ('PySide6/Qt/translations/qt_help_ko.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_en.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ko.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_help_de.qm',
+  ('PySide6/Qt/translations/qtbase_de.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_de.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_de.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_pt_PT.qm',
+  ('PySide6/Qt/translations/qt_nl.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_pt_PT.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_nl.qm',
    'DATA'),
   ('PySide6/Qt/translations/qtbase_ja.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ja.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qtbase_zh_CN.qm',
+  ('PySide6/Qt/translations/qt_he.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_zh_CN.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_he.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_fr.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_fr.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_ca.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ca.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_pt_BR.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_pt_BR.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_ca.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ca.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_cs.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_cs.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_lv.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_lv.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_ko.qm',
+  ('PySide6/Qt/translations/qt_help_hu.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ko.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_hu.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_tr.qm',
+  ('PySide6/Qt/translations/qtbase_lg.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_tr.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_lg.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_help_ja.qm',
+  ('PySide6/Qt/translations/qt_da.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ja.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_da.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_help_gl.qm',
+  ('PySide6/Qt/translations/qt_gl.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_gl.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_gl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_tr.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_tr.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_nn.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_nn.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_en.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_en.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_en.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_en.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_zh_TW.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_zh_TW.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_pl.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_pl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_da.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_da.qm',
    'DATA'),
   ('PySide6/Qt/translations/qt_sl.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_sl.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_ja.qm',
+  ('PySide6/Qt/translations/qt_help_it.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ja.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_it.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_fa.qm',
+  ('PySide6/Qt/translations/qt_help_ca.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_fa.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_ca.qm',
    'DATA'),
-  ('PySide6/Qt/translations/qt_lg.qm',
+  ('PySide6/Qt/translations/qt_help_de.qm',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
-   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_lg.qm',
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_de.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_fr.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_fr.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_ru.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ru.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_nn.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_nn.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_ka.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_ka.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_nl.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_nl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_fi.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_fi.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_fi.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_fi.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_sv.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_sv.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_uk.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_uk.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_sk.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_sk.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_es.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_es.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_hu.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_hu.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_da.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_da.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_zh_CN.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_zh_CN.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_sv.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_sv.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_gl.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_gl.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_uk.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_uk.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_tr.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_tr.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_ar.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ar.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_hr.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_hr.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_help_zh_TW.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_help_zh_TW.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qtbase_bg.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qtbase_bg.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_sk.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_sk.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_ko.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ko.qm',
+   'DATA'),
+  ('PySide6/Qt/translations/qt_ka.qm',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv/lib/python3.12/site-packages/PySide6/Qt/translations/qt_ka.qm',
    'DATA'),
   ('Python', 'Python.framework/Versions/3.12/Python', 'SYMLINK'),
   ('base_library.zip',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/build/Auto Bing Search/base_library.zip',
    'DATA'),
-  ('QtCore', 'PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore', 'SYMLINK'),
-  ('QtGui', 'PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui', 'SYMLINK'),
   ('QtWidgets',
    'PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets',
    'SYMLINK'),
+  ('QtGui', 'PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui', 'SYMLINK'),
+  ('QtCore', 'PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore', 'SYMLINK'),
   ('QtNetwork',
    'PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork',
    'SYMLINK'),
   ('QtSvg', 'PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg', 'SYMLINK'),
   ('QtPdf', 'PySide6/Qt/lib/QtPdf.framework/Versions/A/QtPdf', 'SYMLINK'),
-  ('QtQuick', 'PySide6/Qt/lib/QtQuick.framework/Versions/A/QtQuick', 'SYMLINK'),
+  ('QtQmlMeta',
+   'PySide6/Qt/lib/QtQmlMeta.framework/Versions/A/QtQmlMeta',
+   'SYMLINK'),
+  ('QtQmlWorkerScript',
+   'PySide6/Qt/lib/QtQmlWorkerScript.framework/Versions/A/QtQmlWorkerScript',
+   'SYMLINK'),
   ('QtVirtualKeyboardQml',
    'PySide6/Qt/lib/QtVirtualKeyboardQml.framework/Versions/A/QtVirtualKeyboardQml',
-   'SYMLINK'),
-  ('QtVirtualKeyboard',
-   'PySide6/Qt/lib/QtVirtualKeyboard.framework/Versions/A/QtVirtualKeyboard',
    'SYMLINK'),
   ('QtQmlModels',
    'PySide6/Qt/lib/QtQmlModels.framework/Versions/A/QtQmlModels',
@@ -827,16 +829,14 @@
    'PySide6/Qt/lib/QtOpenGL.framework/Versions/A/QtOpenGL',
    'SYMLINK'),
   ('QtQml', 'PySide6/Qt/lib/QtQml.framework/Versions/A/QtQml', 'SYMLINK'),
-  ('QtQmlWorkerScript',
-   'PySide6/Qt/lib/QtQmlWorkerScript.framework/Versions/A/QtQmlWorkerScript',
+  ('QtVirtualKeyboard',
+   'PySide6/Qt/lib/QtVirtualKeyboard.framework/Versions/A/QtVirtualKeyboard',
    'SYMLINK'),
-  ('QtQmlMeta',
-   'PySide6/Qt/lib/QtQmlMeta.framework/Versions/A/QtQmlMeta',
-   'SYMLINK'),
+  ('QtQuick', 'PySide6/Qt/lib/QtQuick.framework/Versions/A/QtQuick', 'SYMLINK'),
+  ('libpyside6.abi3.6.9.dylib', 'PySide6/libpyside6.abi3.6.9.dylib', 'SYMLINK'),
   ('libshiboken6.abi3.6.9.dylib',
    'shiboken6/libshiboken6.abi3.6.9.dylib',
    'SYMLINK'),
-  ('libpyside6.abi3.6.9.dylib', 'PySide6/libpyside6.abi3.6.9.dylib', 'SYMLINK'),
   ('QtDBus', 'PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus', 'SYMLINK'),
   ('PySide6/Qt/lib/QtCore.framework/QtCore',
    'Versions/Current/QtCore',

@@ -62,7 +62,7 @@
  [],
  False,
  False,
- 1756332924,
+ 1756334597,
  [('runw',
    '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
    'Search/.venv/lib/python3.12/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',

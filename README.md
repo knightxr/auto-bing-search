@@ -45,7 +45,7 @@ Auto Bing Search/
 │  ├─ app.png                 # source icon (1024x1024)
 │  ├─ app.icns                # mac app icon
 │  └─ app.ico                 # windows icon (multi-size)
-└─ .github/workflows/         # optional: CI build actions (if you added them)
+└─ .github/workflows/         # optional: CI build actions
 ```
 
 > The word list is embedded in `auto_bing_search.py` under `random_words` (single-spaced entries).

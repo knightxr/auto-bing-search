@@ -28,6 +28,43 @@ IS_WIN = SYSTEM == "Windows"
 
 IS_LINUX = SYSTEM == "Linux"
 
+APP_USER_MODEL_ID = "com.autobingsearch.app"
+
+def _resource_root():
+    return getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
+
+def get_app_icon_path():
+    root = _resource_root()
+    if IS_WIN:
+        p = os.path.join(root, "assets", "app.ico")
+    elif IS_MAC:
+        p = os.path.join(root, "assets", "app.icns")
+    else:
+        p = os.path.join(root, "assets", "app.png")
+    return p if os.path.exists(p) else None
+
+if IS_WIN:
+    import ctypes
+    from ctypes import wintypes  # noqa: F401
+    _user32 = ctypes.windll.user32
+    _LR_DEFAULTSIZE = 0x00000040
+    _LR_LOADFROMFILE = 0x00000010
+    _IMAGE_ICON = 1
+    _WM_SETICON = 0x0080
+    _ICON_SMALL = 0
+    _ICON_BIG = 1
+
+    def _win_set_window_icons(hwnd: int, ico_path: str):
+        try:
+            hicon_big = _user32.LoadImageW(None, ico_path, _IMAGE_ICON, 0, 0, _LR_LOADFROMFILE | _LR_DEFAULTSIZE)
+            hicon_small = _user32.LoadImageW(None, ico_path, _IMAGE_ICON, 16, 16, _LR_LOADFROMFILE)
+            if hicon_big:
+                _user32.SendMessageW(hwnd, _WM_SETICON, _ICON_BIG, hicon_big)
+            if hicon_small:
+                _user32.SendMessageW(hwnd, _WM_SETICON, _ICON_SMALL, hicon_small)
+        except Exception:
+            pass
+
 # AppKit global key monitor on macOS (used if available)
 if IS_MAC:
     try:
@@ -559,6 +596,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Auto Bing Search")
+        ip = get_app_icon_path()
+        if ip:
+            self.setWindowIcon(QIcon(ip))
+            if IS_WIN:
+                try:
+                    _win_set_window_icons(int(self.winId()), ip)
+                except Exception:
+                    pass
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         self.resize(540, 270)
@@ -910,7 +955,16 @@ class MainWindow(QMainWindow):
         self._set_state_idle()
 
 def main():
+    if IS_WIN:
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_USER_MODEL_ID)
+        except Exception:
+            pass
     app = QApplication(sys.argv)
+    ip = get_app_icon_path()
+    if ip:
+        app.setWindowIcon(QIcon(ip))
     w = MainWindow()
     w.show()
     sys.exit(app.exec())

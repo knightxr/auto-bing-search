@@ -649,6 +649,19 @@ class WindowsGlobalEsc:
             return (True, "OK") if self._ok else (False, "Hook install failed")
         except Exception as e:
             return False, str(e)
+
+    def stop(self):
+        if not IS_WIN:
+            return
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            WM_QUIT = 0x0012
+            self._stop.set()
+            if getattr(self, 'thread_id', None):
+                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
+        except Exception:
+            pass
 # Windows keyboard library ESC monitor
 class WindowsKeyboardEsc:
     def __init__(self, callback):
@@ -669,19 +682,6 @@ class WindowsKeyboardEsc:
         except Exception:
             pass
         self._hook = None
-
-    def stop(self):
-        if not IS_WIN:
-            return
-        try:
-            import ctypes
-            user32 = ctypes.windll.user32
-            WM_QUIT = 0x0012
-            self._stop.set()
-            if self.thread_id:
-                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
-        except Exception:
-            pass
 
 class GradientWidget(QWidget):
     def paintEvent(self, evt):
@@ -1025,6 +1025,9 @@ class MainWindow(QMainWindow):
                 if not esc_ok:
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
+                if IS_WIN and not esc_ok:
+                    QMessageBox.warning(self, "Global ESC",
+                        f"Could not install a global Escape key hook.\n{esc_msg}\nTry running the app as Administrator.")
             else:
                 self.global_esc = GlobalEsc(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()

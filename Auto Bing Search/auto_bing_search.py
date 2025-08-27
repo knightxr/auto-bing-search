@@ -566,12 +566,17 @@ class WindowsGlobalEsc:
             ULONG_PTR = wintypes.ULONG_PTR
         except AttributeError:
             ULONG_PTR = ctypes.c_size_t
+        try:
+            WPARAM = wintypes.WPARAM
+        except AttributeError:
+            WPARAM = ULONG_PTR
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
         WH_KEYBOARD_LL = 13
         WM_KEYDOWN = 0x0100
         WM_SYSKEYDOWN = 0x0104
         WM_QUIT = 0x0012
+        WM_HOTKEY = 0x0312
         VK_ESCAPE = 0x1B
 
         class KBDLLHOOKSTRUCT(ctypes.Structure):
@@ -581,7 +586,7 @@ class WindowsGlobalEsc:
                         ("time", wintypes.DWORD),
                         ("dwExtraInfo", ULONG_PTR)]
 
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, WPARAM, ctypes.c_void_p)
 
         @LowLevelKeyboardProc
         def hook_proc(nCode, wParam, lParam):
@@ -599,15 +604,17 @@ class WindowsGlobalEsc:
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
             self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
-            if not self.hooked:
-                return
+            user32.RegisterHotKey(None, 1, 0, VK_ESCAPE)
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
+                if msg.message == WM_HOTKEY and msg.wParam == 1:
+                    QTimer.singleShot(0, self.callback)
                 user32.TranslateMessage(ctypes.byref(msg))
                 user32.DispatchMessageW(ctypes.byref(msg))
             if self.hooked:
                 user32.UnhookWindowsHookEx(self.hooked)
                 self.hooked = None
+            user32.UnregisterHotKey(None, 1)
 
         try:
             self.thread = threading.Thread(target=loop, daemon=True)
@@ -626,6 +633,10 @@ class WindowsGlobalEsc:
             self._stop.set()
             if self.thread_id:
                 user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
+            try:
+                user32.UnregisterHotKey(None, 1)
+            except Exception:
+                pass
         except Exception:
             pass
 

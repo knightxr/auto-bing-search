@@ -11,13 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      # System libs common for PySide6 apps
-      - name: Install system libs
+      - name: Install system libs for Qt/PySide6
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
@@ -49,10 +47,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: auto-bing-search-linux-bin
-          path: dist/auto-bing-search
+          path: Auto Bing Search/dist/auto-bing-search
 
       - name: Upload tar.gz
         uses: actions/upload-artifact@v4
         with:
           name: auto-bing-search-linux-tar
-          path: dist/auto-bing-search-linux.tar.gz
+          path: Auto Bing Search/dist/auto-bing-search-linux.tar.gz

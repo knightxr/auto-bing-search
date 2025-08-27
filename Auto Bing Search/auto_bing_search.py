@@ -215,7 +215,6 @@ def open_browser(prefer_edge=True, url=BING_HOME):
     if not used_edge:
         webbrowser.open(url, new=1)
 
-# macOS AppleScript
 def _osa(script: str):
     try:
         return subprocess.run(["osascript", "-e", script], check=True,
@@ -273,7 +272,6 @@ def mac_preflight_access():
     except FileNotFoundError:
         return False, "osascript not found."
 
-# Win/Linux helpers
 def wl_preflight():
     try:
         _ = pyautogui.size(); _ = pyautogui.position(); return True, "OK"
@@ -298,7 +296,6 @@ def human_type_pyautogui(term: str):
         if random.random() < 0.06:
             time.sleep(random.uniform(0.12, 0.28))
 
-# Try to focus Bing's on-page search box on Win/Linux
 def _focus_bing_box_win_linux():
     try:
         # click near the top-center within the active window; adjust Y so it hits the results-page box too
@@ -368,7 +365,6 @@ class Automator:
         return f"{BING_HOME}/search?q={quote_plus(term)}"
 
     def search_once(self, term: str):
-        """Type into Bing's search box in the SAME TAB. For the first search, ensure focus; thereafter use the results-page auto-focus behavior (any letter focuses the box), then Ctrl/Cmd+A and type. Falls back to direct URL if something goes wrong."""
         if IS_MAC:
             try:
                 mac_activate(self.browser_mac)
@@ -427,7 +423,6 @@ class Automator:
             except Exception:
                 pass
 
-# ---------- Worker ----------
 class SearchWorker(QThread):
     progress = Signal(int)
     status   = Signal(str)
@@ -474,7 +469,6 @@ class SearchWorker(QThread):
         finally:
             self.done.emit()
 
-# ---------- Global ESC ----------
 class GlobalEsc:
     def __init__(self, callback):
         self.callback = callback
@@ -515,7 +509,7 @@ class GlobalEsc:
                 pass
             self.listener = None
 
-# macOS AppKit global ESC monitor (native, preferred if available)
+ # macOS global ESC monitor
 class MacGlobalEsc:
     def __init__(self, callback):
         self.callback = callback
@@ -545,7 +539,7 @@ class MacGlobalEsc:
                 pass
             self.globalMonitor = None
 
-# Windows: low-level keyboard hook for global ESC
+# Windows global ESC hook
 class WindowsGlobalEsc:
     def __init__(self, callback):
         self.callback = callback
@@ -562,6 +556,8 @@ class WindowsGlobalEsc:
             from ctypes import wintypes
         except Exception as e:
             return False, str(e)
+
+        # pointer-sized types
         try:
             ULONG_PTR = wintypes.ULONG_PTR
         except AttributeError:
@@ -570,13 +566,23 @@ class WindowsGlobalEsc:
             WPARAM = wintypes.WPARAM
         except AttributeError:
             WPARAM = ULONG_PTR
+        try:
+            LPARAM = wintypes.LPARAM
+        except AttributeError:
+            LPARAM = ctypes.c_ssize_t
+        try:
+            HHOOK = wintypes.HHOOK
+        except AttributeError:
+            HHOOK = ctypes.c_void_p
+
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
+
         WH_KEYBOARD_LL = 13
+        HC_ACTION = 0
         WM_KEYDOWN = 0x0100
         WM_SYSKEYDOWN = 0x0104
         WM_QUIT = 0x0012
-        WM_HOTKEY = 0x0312
         VK_ESCAPE = 0x1B
 
         class KBDLLHOOKSTRUCT(ctypes.Structure):
@@ -586,12 +592,22 @@ class WindowsGlobalEsc:
                         ("time", wintypes.DWORD),
                         ("dwExtraInfo", ULONG_PTR)]
 
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, WPARAM, ctypes.c_void_p)
+        # Proper prototypes
+        LRESULT = ctypes.c_longlong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_long
+        HOOKPROC = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, WPARAM, LPARAM)
+        user32.SetWindowsHookExW.argtypes = [ctypes.c_int, HOOKPROC, wintypes.HINSTANCE, wintypes.DWORD]
+        user32.SetWindowsHookExW.restype = HHOOK
+        user32.CallNextHookEx.argtypes = [HHOOK, ctypes.c_int, WPARAM, LPARAM]
+        user32.CallNextHookEx.restype = LRESULT
+        user32.GetMessageW.argtypes = [ctypes.POINTER(wintypes.MSG), wintypes.HWND, wintypes.UINT, wintypes.UINT]
+        user32.GetMessageW.restype = ctypes.c_int
+        user32.TranslateMessage.argtypes = [ctypes.POINTER(wintypes.MSG)]
+        user32.DispatchMessageW.argtypes = [ctypes.POINTER(wintypes.MSG)]
 
-        @LowLevelKeyboardProc
+        @HOOKPROC
         def hook_proc(nCode, wParam, lParam):
             try:
-                if nCode >= 0 and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
+                if nCode == HC_ACTION and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
                     kb = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
                     if kb.vkCode == VK_ESCAPE:
                         QTimer.singleShot(0, self.callback)
@@ -603,18 +619,20 @@ class WindowsGlobalEsc:
 
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
-            user32.RegisterHotKey(None, 1, 0, VK_ESCAPE)
+            hinst = kernel32.GetModuleHandleW(None)
+            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, hinst, 0)
+            if not self.hooked:
+                # try with NULL hinst as a fallback
+                self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, None, 0)
+                if not self.hooked:
+                    return
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
-                if msg.message == WM_HOTKEY and msg.wParam == 1:
-                    QTimer.singleShot(0, self.callback)
                 user32.TranslateMessage(ctypes.byref(msg))
                 user32.DispatchMessageW(ctypes.byref(msg))
             if self.hooked:
                 user32.UnhookWindowsHookEx(self.hooked)
                 self.hooked = None
-            user32.UnregisterHotKey(None, 1)
 
         try:
             self.thread = threading.Thread(target=loop, daemon=True)
@@ -633,14 +651,9 @@ class WindowsGlobalEsc:
             self._stop.set()
             if self.thread_id:
                 user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
-            try:
-                user32.UnregisterHotKey(None, 1)
-            except Exception:
-                pass
         except Exception:
             pass
 
-# UI
 class GradientWidget(QWidget):
     def paintEvent(self, evt):
         painter = QPainter(self)

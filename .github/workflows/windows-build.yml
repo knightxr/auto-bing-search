@@ -39,10 +39,6 @@ jobs:
               print("assets/app.ico already present")
           PY
 
-      - name: Clean old spec
-        shell: pwsh
-        run: Remove-Item -Force *.spec -ErrorAction SilentlyContinue
-
       - name: Build (one-file EXE with icon)
         shell: pwsh
         run: >

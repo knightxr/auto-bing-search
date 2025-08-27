@@ -562,6 +562,10 @@ class WindowsGlobalEsc:
             from ctypes import wintypes
         except Exception as e:
             return False, str(e)
+        try:
+            ULONG_PTR = wintypes.ULONG_PTR
+        except AttributeError:
+            ULONG_PTR = ctypes.c_size_t
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
         WH_KEYBOARD_LL = 13
@@ -575,7 +579,7 @@ class WindowsGlobalEsc:
                         ("scanCode", wintypes.DWORD),
                         ("flags", wintypes.DWORD),
                         ("time", wintypes.DWORD),
-                        ("dwExtraInfo", wintypes.ULONG_PTR)]
+                        ("dwExtraInfo", ULONG_PTR)]
 
         LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
 

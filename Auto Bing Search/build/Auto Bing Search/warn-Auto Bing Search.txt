@@ -15,10 +15,10 @@ IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
             tracking down the missing module yourself. Thanks!
 
 missing module named winreg - imported by importlib._bootstrap_external (conditional), platform (delayed, optional), mimetypes (optional), urllib.request (delayed, conditional, optional)
-missing module named nt - imported by os (delayed, conditional, optional), ntpath (optional), shutil (conditional), importlib._bootstrap_external (conditional), ctypes (delayed, conditional)
+missing module named nt - imported by shutil (conditional), importlib._bootstrap_external (conditional), ntpath (optional), os (delayed, conditional, optional), ctypes (delayed, conditional)
 missing module named _frozen_importlib_external - imported by importlib._bootstrap (delayed), importlib (optional), importlib.abc (optional)
 excluded module named _frozen_importlib - imported by importlib (optional), importlib.abc (optional)
-missing module named _winapi - imported by encodings (delayed, conditional, optional), ntpath (optional), shutil (conditional), subprocess (conditional), mimetypes (optional)
+missing module named _winapi - imported by encodings (delayed, conditional, optional), shutil (conditional), ntpath (optional), subprocess (conditional), mimetypes (optional)
 missing module named Quartz.NSSystemDefined - imported by Quartz (top-level), pynput.keyboard._darwin (top-level)
 missing module named Quartz.NSEvent - imported by Quartz (top-level), pynput.keyboard._darwin (top-level)
 missing module named Quartz.kCGKeyboardEventKeycode - imported by Quartz (top-level), pynput.keyboard._darwin (top-level)
@@ -61,9 +61,9 @@ missing module named objc.loadBundle - imported by objc (top-level), objc._lazyi
 missing module named objc.getClassList - imported by objc (top-level), objc._lazyimport (top-level)
 missing module named objc.NULL - imported by objc (top-level), objc._properties (top-level)
 missing module named objc._C_BOOL - imported by objc (top-level), objc._properties (top-level)
-missing module named pyautogui - imported by /Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing Search/auto_bing_search.py (conditional, optional)
 missing module named AppKit.NSEventMaskKeyDown - imported by AppKit (conditional, optional), /Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing Search/auto_bing_search.py (conditional, optional)
 missing module named AppKit.NSEvent - imported by AppKit (conditional, optional), /Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing Search/auto_bing_search.py (conditional, optional), pynput.mouse._darwin (top-level)
+missing module named pyautogui - imported by /Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing Search/auto_bing_search.py (delayed, conditional, optional)
 runtime module named six.moves - imported by pynput._util (top-level)
 missing module named StringIO - imported by six (conditional)
 missing module named 'Xlib.protocol' - imported by pynput.keyboard._xorg (top-level), pynput.mouse._xorg (top-level)

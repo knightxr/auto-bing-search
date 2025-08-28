@@ -44,7 +44,78 @@ SYSTEM = platform.system()
 IS_MAC = SYSTEM == "Darwin"
 IS_WIN = SYSTEM == "Windows"
 
+
 IS_LINUX = SYSTEM == "Linux"
+
+# --- Focus browser helpers for Win/Linux ---
+def win_focus_browser():
+    if not IS_WIN:
+        return False
+    try:
+        import ctypes
+        from ctypes import wintypes
+        user32 = ctypes.windll.user32
+        SW_RESTORE = 9
+        EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+        targets = []
+        @EnumWindowsProc
+        def enum_proc(hwnd, lparam):
+            if not user32.IsWindowVisible(hwnd):
+                return True
+            length = user32.GetWindowTextLengthW(hwnd)
+            if length == 0:
+                return True
+            buf = ctypes.create_unicode_buffer(length + 1)
+            user32.GetWindowTextW(hwnd, buf, length + 1)
+            title = buf.value
+            if not title:
+                return True
+            if ("Microsoft Edge" in title or "Google Chrome" in title or "Mozilla Firefox" in title or "Brave" in title or "Opera" in title or " - Bing" in title or "Bing - " in title):
+                targets.append(hwnd)
+                return False
+            return True
+        user32.EnumWindows(enum_proc, 0)
+        if targets:
+            hwnd = targets[0]
+            try:
+                user32.AllowSetForegroundWindow(0xFFFFFFFF)
+            except Exception:
+                pass
+            user32.ShowWindowAsync(hwnd, SW_RESTORE)
+            user32.SetForegroundWindow(hwnd)
+            return True
+    except Exception:
+        pass
+    return False
+
+def linux_focus_browser():
+    if not IS_LINUX:
+        return False
+    try:
+        devnull = open(os.devnull, "wb")
+        for cmd in (["wmctrl","-xa","microsoft-edge"], ["wmctrl","-xa","google-chrome"], ["wmctrl","-xa","firefox"], ["wmctrl","-xa","brave"]):
+            if shutil.which(cmd[0]) and subprocess.call(cmd, stdout=devnull, stderr=devnull) == 0:
+                return True
+        if shutil.which("xdotool"):
+            for cls in ("microsoft-edge", "google-chrome", "firefox", "brave"):
+                subprocess.call(["xdotool","search","--class",cls,"windowactivate"], stdout=devnull, stderr=devnull)
+                return True
+    except Exception:
+        pass
+    try:
+        import pyautogui
+        pyautogui.hotkey("alt","tab")
+        time.sleep(0.12)
+        return True
+    except Exception:
+        return False
+
+def wl_focus_browser():
+    if IS_WIN:
+        return win_focus_browser()
+    if IS_LINUX:
+        return linux_focus_browser()
+    return False
 
 APP_USER_MODEL_ID = "com.autobingsearch.app"
 
@@ -341,6 +412,14 @@ class Automator:
         self._launched = False
         self._first_search = True
 
+    def _refocus_browser(self):
+        if IS_MAC:
+            mac_activate(self.browser_mac)
+            time.sleep(0.08)
+        else:
+            wl_focus_browser()
+            time.sleep(0.08)
+
     def open_and_ready(self):
         if not self._launched:
             open_browser(prefer_edge=True, url=BING_HOME)
@@ -349,6 +428,7 @@ class Automator:
             time.sleep(2.4)
             if IS_MAC:
                 mac_activate(self.browser_mac)
+        self._refocus_browser()
 
     def _focus_bing_box_mac(self) -> bool:
         try:
@@ -393,6 +473,7 @@ class Automator:
 
     def search_once(self, term: str):
         """Type into Bing's search box in the SAME TAB. For the first search, ensure focus; thereafter use the results-page auto-focus behavior (any letter focuses the box), then Ctrl/Cmd+A and type. Falls back to direct URL if something goes wrong."""
+        self._refocus_browser()
         if IS_MAC:
             try:
                 mac_activate(self.browser_mac)
@@ -426,7 +507,6 @@ class Automator:
                     self._first_search = False
                     return
 
-        
         try:
             if self._first_search:
                 _focus_bing_box_win_linux()
@@ -725,14 +805,14 @@ class WindowsLLCtrlAltEscHook:
         VK_RCONTROL = 0xA3
         VK_MENU = 0x12
 
+        ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
         class KBDLLHOOKSTRUCT(ctypes.Structure):
             _fields_ = [("vkCode", wintypes.DWORD),
                         ("scanCode", wintypes.DWORD),
                         ("flags", wintypes.DWORD),
                         ("time", wintypes.DWORD),
-                        ("dwExtraInfo", wintypes.ULONG_PTR)]
-
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
+                        ("dwExtraInfo", ULONG_PTR)]
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(wintypes.LRESULT, ctypes.c_int, wintypes.WPARAM, wintypes.LPARAM)
         state = self
 
         @LowLevelKeyboardProc
@@ -817,14 +897,14 @@ class WindowsGlobalEsc:
         WM_QUIT = 0x0012
         VK_ESCAPE = 0x1B
 
+        ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
         class KBDLLHOOKSTRUCT(ctypes.Structure):
             _fields_ = [("vkCode", wintypes.DWORD),
                         ("scanCode", wintypes.DWORD),
                         ("flags", wintypes.DWORD),
                         ("time", wintypes.DWORD),
-                        ("dwExtraInfo", wintypes.ULONG_PTR)]
-
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
+                        ("dwExtraInfo", ULONG_PTR)]
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(wintypes.LRESULT, ctypes.c_int, wintypes.WPARAM, wintypes.LPARAM)
 
         @LowLevelKeyboardProc
         def hook_proc(nCode, wParam, lParam):
@@ -858,6 +938,50 @@ class WindowsGlobalEsc:
             return True, "OK"
         except Exception as e:
             return False, str(e)
+
+# --- WindowsPynputCtrlAltEsc ---
+
+class WindowsPynputCtrlAltEsc:
+    def __init__(self, callback):
+        self.callback = callback
+        self.listener = None
+        self.ctrl = False
+        self.alt = False
+    def start(self):
+        if not IS_WIN or pynput_keyboard is None:
+            return False, "Unavailable"
+        def on_press(key):
+            try:
+                if key in (pynput_keyboard.Key.ctrl, pynput_keyboard.Key.ctrl_l, pynput_keyboard.Key.ctrl_r):
+                    self.ctrl = True
+                elif key in (pynput_keyboard.Key.alt, pynput_keyboard.Key.alt_l, pynput_keyboard.Key.alt_r):
+                    self.alt = True
+                elif key == pynput_keyboard.Key.esc and self.ctrl and self.alt:
+                    QTimer.singleShot(0, self.callback)
+            except Exception:
+                pass
+        def on_release(key):
+            try:
+                if key in (pynput_keyboard.Key.ctrl, pynput_keyboard.Key.ctrl_l, pynput_keyboard.Key.ctrl_r):
+                    self.ctrl = False
+                elif key in (pynput_keyboard.Key.alt, pynput_keyboard.Key.alt_l, pynput_keyboard.Key.alt_r):
+                    self.alt = False
+            except Exception:
+                pass
+        try:
+            self.listener = pynput_keyboard.Listener(on_press=on_press, on_release=on_release, suppress=False)
+            self.listener.daemon = True
+            self.listener.start()
+            return True, "OK"
+        except Exception as e:
+            return False, str(e)
+    def stop(self):
+        if self.listener:
+            try:
+                self.listener.stop()
+            except Exception:
+                pass
+            self.listener = None
 
     def stop(self):
         if not IS_WIN:
@@ -1220,6 +1344,9 @@ class MainWindow(QMainWindow):
                     esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
                     self.global_esc = WindowsGlobalEsc(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
+                if not esc_ok:
+                    self.global_esc = WindowsPynputCtrlAltEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)

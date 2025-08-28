@@ -287,24 +287,7 @@ def mac_type_human(text: str):
     '''
     _osa(script)
 
-def mac_preflight_access():
-    try:
-        _osa('tell application "System Events" to count processes')
-    except subprocess.CalledProcessError:
-        return False, ("Allow Automation for your Terminal/VS Code:\n"
-                       "System Settings → Privacy & Security → Automation.")
-    except FileNotFoundError:
-        return False, "osascript not found."
 
-    try:
-        from Quartz import AXIsProcessTrustedWithOptions, kAXTrustedCheckOptionPrompt
-        if not AXIsProcessTrustedWithOptions({kAXTrustedCheckOptionPrompt: True}):
-            return False, ("Enable Accessibility for your Terminal/VS Code:\n"
-                           "System Settings → Privacy & Security → Accessibility.")
-    except Exception:
-        pass
-
-    return True, "OK"
 
 def wl_preflight():
     try:
@@ -677,13 +660,14 @@ class WindowsCtrlEscHotkey:
         from ctypes import wintypes
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
+        MOD_ALT = 0x0001
         MOD_CONTROL = 0x0002
         VK_ESCAPE = 0x1B
         WM_HOTKEY = 0x0312
         HOTKEY_ID = 1
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            if not user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL, VK_ESCAPE):
+            if not user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE):
                 return
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
@@ -1099,7 +1083,7 @@ class MainWindow(QMainWindow):
         root.addWidget(self.card, 0, Qt.AlignHCenter)
 
         root.addStretch(1)
-        hint_text = "Press Ctrl+Esc to stop" if IS_WIN else "Press Esc to stop"
+        hint_text = "Press Ctrl+Alt+Esc to stop" if IS_WIN else "Press Esc to stop"
         hint = HintLabel(hint_text)
         hint.setAlignment(Qt.AlignHCenter)
         root.addWidget(hint, alignment=Qt.AlignHCenter)
@@ -1107,7 +1091,7 @@ class MainWindow(QMainWindow):
         self._set_state_idle()
 
         if IS_MAC:
-            self._ensure_mac_permissions()
+            self._show_mac_permissions_once()
         else:
             ok, msg = wl_preflight()
             if not ok and IS_LINUX:
@@ -1135,31 +1119,23 @@ class MainWindow(QMainWindow):
                 self.global_esc = GlobalEsc(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
 
-            if not esc_ok and IS_MAC:
-                QMessageBox.information(
-                    self,
-                    "ESC permission",
-                    "Enable both ‘Accessibility’ and ‘Input Monitoring’ for the app you run this from (Terminal/VS Code or the packaged app)."
-                )
-                mac_open_input_monitoring()
-
         self.adjustSize()
         self.setFixedSize(self.size())
 
-    def _ensure_mac_permissions(self):
-        ok, msg = mac_preflight_access()
-        if ok:
-            return True
+
+    def _show_mac_permissions_once(self):
+        settings = QSettings("AutoBingSearch", "App")
+        if settings.value("mac_perm_prompt_shown", "0") == "1":
+            return
         while True:
             box = QMessageBox(self)
             box.setIcon(QMessageBox.Warning)
-            box.setWindowTitle("Permission required")
-            box.setText(msg)
+            box.setWindowTitle("Setup macOS permissions")
+            box.setText("Enable Accessibility, Input Monitoring, and Automation for your Terminal/VS Code or the packaged app in System Settings → Privacy & Security.")
             btn_acc = box.addButton("Open Accessibility", QMessageBox.ActionRole)
             btn_inp = box.addButton("Open Input Monitoring", QMessageBox.ActionRole)
             btn_auto = box.addButton("Open Automation", QMessageBox.ActionRole)
-            btn_retry = box.addButton("Retry", QMessageBox.AcceptRole)
-            btn_quit = box.addButton("Quit", QMessageBox.RejectRole)
+            btn_done = box.addButton("Done", QMessageBox.AcceptRole)
             box.exec()
             if box.clickedButton() is btn_acc:
                 mac_open_accessibility()
@@ -1170,12 +1146,8 @@ class MainWindow(QMainWindow):
             if box.clickedButton() is btn_auto:
                 mac_open_automation()
                 continue
-            if box.clickedButton() is btn_retry:
-                ok, msg = mac_preflight_access()
-                if ok:
-                    return True
-                continue
-            return False
+            settings.setValue("mac_perm_prompt_shown", "1")
+            break
 
     def _ensure_linux_requirements(self, msg):
         box = QMessageBox(self)
@@ -1390,8 +1362,4 @@ def main():
     sys.exit(app.exec())
 
 if __name__ == "__main__":
-    if IS_MAC: ok, msg = mac_preflight_access()
-    else:      ok, msg = wl_preflight()
-    if not ok:
-        print("[Automation permission warning]", msg)
     main()

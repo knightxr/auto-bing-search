@@ -1,6 +1,6 @@
 import os, sys, time, random, platform, shutil, subprocess, webbrowser, threading
 from urllib.parse import quote_plus
-from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QSettings
+from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QSettings, QAbstractNativeEventFilter
 from PySide6.QtGui import (
     QPalette, QColor, QFont, QPainter, QLinearGradient, QPen, QPixmap, QIcon, QShortcut, QKeySequence
 )
@@ -56,23 +56,33 @@ def win_focus_browser():
         from ctypes import wintypes
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
+        SW_SHOW = 5
         SW_RESTORE = 9
+        SW_SHOWMAXIMIZED = 3
         EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+        browsers = {"msedge.exe", "chrome.exe", "firefox.exe", "brave.exe", "opera.exe"}
+        GetWindowThreadProcessId = user32.GetWindowThreadProcessId
+        GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
+        QueryFullProcessImageNameW = kernel32.QueryFullProcessImageNameW
+        QueryFullProcessImageNameW.argtypes = [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD)]
+        QueryFullProcessImageNameW.restype = wintypes.BOOL
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
         targets = []
         @EnumWindowsProc
         def enum_proc(hwnd, lparam):
             if not user32.IsWindowVisible(hwnd):
                 return True
-            length = user32.GetWindowTextLengthW(hwnd)
-            if length == 0:
-                return True
-            buf = ctypes.create_unicode_buffer(length + 1)
-            user32.GetWindowTextW(hwnd, buf, length + 1)
-            title = buf.value
-            if not title:
-                return True
-            t = title.lower()
-            if ("edge" in t or "chrome" in t or "firefox" in t or "brave" in t or "opera" in t or " - bing" in t or "bing - " in t):
+            pid = wintypes.DWORD(0)
+            GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+            h = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid.value)
+            exe = ""
+            if h:
+                buf = ctypes.create_unicode_buffer(260)
+                size = wintypes.DWORD(260)
+                if QueryFullProcessImageNameW(h, 0, buf, ctypes.byref(size)):
+                    exe = os.path.basename(buf.value).lower()
+                kernel32.CloseHandle(h)
+            if exe in browsers:
                 targets.append(hwnd)
                 return False
             return True
@@ -80,12 +90,26 @@ def win_focus_browser():
         if not targets:
             return False
         hwnd = targets[0]
+        class POINT(ctypes.Structure):
+            _fields_ = [("x", wintypes.LONG), ("y", wintypes.LONG)]
+        class RECT(ctypes.Structure):
+            _fields_ = [("left", wintypes.LONG), ("top", wintypes.LONG), ("right", wintypes.LONG), ("bottom", wintypes.LONG)]
+        class WINDOWPLACEMENT(ctypes.Structure):
+            _fields_ = [("length", wintypes.UINT), ("flags", wintypes.UINT), ("showCmd", wintypes.UINT), ("ptMinPosition", POINT), ("ptMaxPosition", POINT), ("rcNormalPosition", RECT)]
+        wp = WINDOWPLACEMENT()
+        wp.length = ctypes.sizeof(WINDOWPLACEMENT)
+        if user32.GetWindowPlacement(hwnd, ctypes.byref(wp)):
+            if wp.showCmd == 2:
+                user32.ShowWindow(hwnd, SW_RESTORE)
+            elif wp.showCmd == SW_SHOWMAXIMIZED:
+                user32.ShowWindow(hwnd, SW_SHOWMAXIMIZED)
+            else:
+                user32.ShowWindow(hwnd, SW_SHOW)
         try:
             fg = user32.GetForegroundWindow()
             ctid = kernel32.GetCurrentThreadId()
             tid = user32.GetWindowThreadProcessId(fg, None)
             user32.AttachThreadInput(ctid, tid, True)
-            user32.ShowWindow(hwnd, SW_RESTORE)
             user32.BringWindowToTop(hwnd)
             user32.SetForegroundWindow(hwnd)
             user32.AttachThreadInput(ctid, tid, False)
@@ -100,6 +124,33 @@ def win_focus_browser():
         return user32.GetForegroundWindow() == hwnd
     except Exception:
         return False
+# --- Windows hotkey filter helper ---
+class WinHotkeyFilter(QAbstractNativeEventFilter):
+    def __init__(self, hwnd, callback):
+        super().__init__()
+        import ctypes
+        self.user32 = ctypes.windll.user32
+        self.hwnd = hwnd
+        self.callback = callback
+        self.id = 1
+        MOD_ALT = 0x0001
+        MOD_CONTROL = 0x0002
+        VK_ESCAPE = 0x1B
+        self.user32.RegisterHotKey(self.hwnd, self.id, MOD_CONTROL | MOD_ALT, VK_ESCAPE)
+    def nativeEventFilter(self, etype, message):
+        if etype not in ("windows_generic_MSG", "windows_dispatcher_MSG"):
+            return False, 0
+        import ctypes
+        from ctypes import wintypes
+        msg = ctypes.cast(message, ctypes.POINTER(wintypes.MSG)).contents
+        if msg.message == 0x0312 and msg.wParam == self.id:
+            QTimer.singleShot(0, self.callback)
+        return False, 0
+    def unregister(self):
+        try:
+            self.user32.UnregisterHotKey(self.hwnd, self.id)
+        except Exception:
+            pass
 
 def linux_focus_browser():
     if not IS_LINUX:
@@ -1193,6 +1244,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.bg)
 
         self.global_esc = None
+        self._win_hotkey_filter = None
+        self._win_hotkey_hwnd = None
 
         self.esc_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self)
         self.esc_shortcut.activated.connect(self.on_stop)
@@ -1346,16 +1399,14 @@ class MainWindow(QMainWindow):
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             elif IS_WIN:
-                self.global_esc = WindowsCtrlEscHotkey(self.on_stop)
-                esc_ok, esc_msg = self.global_esc.start()
-                if not esc_ok:
+                try:
+                    hwnd = int(self.winId())
+                    self._win_hotkey_hwnd = hwnd
+                    self._win_hotkey_filter = WinHotkeyFilter(hwnd, self.on_stop)
+                    QApplication.instance().installNativeEventFilter(self._win_hotkey_filter)
+                    esc_ok, esc_msg = True, "OK"
+                except Exception:
                     self.global_esc = WindowsLLCtrlAltEscHook(self.on_stop)
-                    esc_ok, esc_msg = self.global_esc.start()
-                if not esc_ok:
-                    self.global_esc = WindowsGlobalEsc(self.on_stop)
-                    esc_ok, esc_msg = self.global_esc.start()
-                if not esc_ok:
-                    self.global_esc = WindowsPynputCtrlAltEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)
@@ -1455,6 +1506,16 @@ class MainWindow(QMainWindow):
             self.on_stop()
         finally:
             try:
+                if IS_WIN and getattr(self, "_win_hotkey_filter", None):
+                    try:
+                        QApplication.instance().removeNativeEventFilter(self._win_hotkey_filter)
+                    except Exception:
+                        pass
+                    try:
+                        self._win_hotkey_filter.unregister()
+                    except Exception:
+                        pass
+                    self._win_hotkey_filter = None
                 if getattr(self, "global_esc", None):
                     self.global_esc.stop()
             finally:

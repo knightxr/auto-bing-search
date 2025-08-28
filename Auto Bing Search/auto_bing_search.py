@@ -30,18 +30,21 @@ def mac_open_automation():
         except Exception:
             pass
 
+def mac_open_accessibility():
+    if IS_MAC:
+        try:
+            subprocess.run([
+                "open",
+                "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
+            ], check=False)
+        except Exception:
+            pass
+
 SYSTEM = platform.system()
 IS_MAC = SYSTEM == "Darwin"
 IS_WIN = SYSTEM == "Windows"
-IS_LINUX = SYSTEM == "Linux"
 
-if IS_WIN:
-    try:
-        import keyboard as kb_win
-    except Exception:
-        kb_win = None
-else:
-    kb_win = None
+IS_LINUX = SYSTEM == "Linux"
 
 APP_USER_MODEL_ID = "com.autobingsearch.app"
 
@@ -80,7 +83,6 @@ if IS_WIN:
         except Exception:
             pass
 
-# AppKit global key monitor on macOS (used if available)
 if IS_MAC:
     try:
         from AppKit import NSEvent
@@ -250,7 +252,23 @@ def mac_keycode(code: int, with_cmd=False):
         _osa(f'tell application "System Events" to key code {code}')
 
 def mac_focus_omnibox(): mac_keycode(37, with_cmd=True)     # cmd-L
-def mac_press_return():  mac_keycode(36, with_cmd=False)    # return
+def mac_press_return():  mac_keycode(36, with_cmd=False)
+
+# Click near the top-center of the main display to focus Bing's search box (macOS)
+def mac_click_focus_region():
+    try:
+        import Quartz, time as _t
+        bounds = Quartz.CGDisplayBounds(Quartz.CGMainDisplayID())
+        x = int(bounds.size.width * 0.5)
+        y = int(bounds.size.height * 0.22)
+        pos = (x, y)
+        ev = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventLeftMouseDown, pos, Quartz.kCGMouseButtonLeft)
+        Quartz.CGEventPost(Quartz.kCGHIDEventTap, ev)
+        _t.sleep(0.01)
+        ev = Quartz.CGEventCreateMouseEvent(None, Quartz.kCGEventLeftMouseUp, pos, Quartz.kCGMouseButtonLeft)
+        Quartz.CGEventPost(Quartz.kCGHIDEventTap, ev)
+    except Exception:
+        pass
 
 def mac_type_human(text: str):
     esc = text.replace("\\", "\\\\").replace('"', '\\"')
@@ -271,13 +289,22 @@ def mac_type_human(text: str):
 
 def mac_preflight_access():
     try:
-        _osa('tell application "System Events" to count processes'); return True, "OK"
+        _osa('tell application "System Events" to count processes')
     except subprocess.CalledProcessError:
-        return False, ("macOS blocked automation.\n"
-                       "Allow Accessibility for your Terminal/VS Code:\n"
-                       "System Settings → Privacy & Security → Accessibility.")
+        return False, ("Allow Automation for your Terminal/VS Code:\n"
+                       "System Settings → Privacy & Security → Automation.")
     except FileNotFoundError:
         return False, "osascript not found."
+
+    try:
+        from Quartz import AXIsProcessTrustedWithOptions, kAXTrustedCheckOptionPrompt
+        if not AXIsProcessTrustedWithOptions({kAXTrustedCheckOptionPrompt: True}):
+            return False, ("Enable Accessibility for your Terminal/VS Code:\n"
+                           "System Settings → Privacy & Security → Accessibility.")
+    except Exception:
+        pass
+
+    return True, "OK"
 
 def wl_preflight():
     try:
@@ -303,6 +330,7 @@ def human_type_pyautogui(term: str):
         if random.random() < 0.06:
             time.sleep(random.uniform(0.12, 0.28))
 
+# Try to focus Bing's on-page search box on Win/Linux
 def _focus_bing_box_win_linux():
     try:
         # click near the top-center within the active window; adjust Y so it hits the results-page box too
@@ -323,7 +351,6 @@ def _focus_bing_box_win_linux():
     except Exception:
         pass
 
-# Automation
 class Automator:
     def __init__(self):
         self.browser_mac = mac_pick_browser() if IS_MAC else None
@@ -354,6 +381,16 @@ class Automator:
             )
             return True
         except Exception:
+            pass
+        try:
+            mac_activate(self.browser_mac)
+            time.sleep(0.1)
+            mac_click_focus_region()
+            time.sleep(0.15)
+            _osa('tell application "System Events" to keystroke "a" using command down')
+            _osa('tell application "System Events" to key code 51')
+            return True
+        except Exception:
             return False
 
     def _mac_set_front_url(self, url: str):
@@ -372,16 +409,19 @@ class Automator:
         return f"{BING_HOME}/search?q={quote_plus(term)}"
 
     def search_once(self, term: str):
+        """Type into Bing's search box in the SAME TAB. For the first search, ensure focus; thereafter use the results-page auto-focus behavior (any letter focuses the box), then Ctrl/Cmd+A and type. Falls back to direct URL if something goes wrong."""
         if IS_MAC:
             try:
                 mac_activate(self.browser_mac)
                 time.sleep(0.10)
                 if self._first_search:
-                    # Make sure the page input is focused and cleared on the first run
                     if not self._focus_bing_box_mac():
-                        self._mac_set_front_url(BING_HOME)
-                        time.sleep(1.4)
-                        self._focus_bing_box_mac()
+                        mac_activate(self.browser_mac)
+                        time.sleep(0.2)
+                        mac_click_focus_region()
+                        time.sleep(0.15)
+                        _osa('tell application "System Events" to keystroke "a" using command down')
+                        _osa('tell application "System Events" to key code 51')
                     mac_type_human(term)
                     mac_press_return()
                     self._first_search = False
@@ -403,7 +443,7 @@ class Automator:
                     self._first_search = False
                     return
 
-        # Windows / Linux
+        
         try:
             if self._first_search:
                 _focus_bing_box_win_linux()
@@ -469,7 +509,9 @@ class SearchWorker(QThread):
                 term = random.choice(self.words)
                 self.words.remove(term)
                 self.automator.search_once(term)
-                time.sleep(10.0)  # spacing between searches
+                # spacing between searches, interruptible by stop
+                if self._stop.wait(10.0):
+                    break
                 self.progress.emit(remaining - (i + 1))
         except Exception as e:
             self.error.emit(f"Automation stopped:\n{e}")
@@ -516,7 +558,6 @@ class GlobalEsc:
                 pass
             self.listener = None
 
- # macOS global ESC monitor
 class MacGlobalEsc:
     def __init__(self, callback):
         self.callback = callback
@@ -546,7 +587,128 @@ class MacGlobalEsc:
                 pass
             self.globalMonitor = None
 
-# Windows global ESC hook
+# Quartz event tap global ESC listener for macOS
+class MacEventTapEsc:
+    def __init__(self, callback):
+        self.callback = callback
+        self.tap = None
+        self.source = None
+        self._rl = None
+        self.thread = None
+        self._ready = threading.Event()
+        self._ok = False
+
+    def start(self):
+        if not IS_MAC:
+            return False, "Mac only"
+        try:
+            import Quartz
+        except Exception as e:
+            return False, str(e)
+
+        def loop():
+            try:
+                mask = Quartz.CGEventMaskBit(Quartz.kCGEventKeyDown)
+                def handler(proxy, type_, event, refcon):
+                    try:
+                        if type_ == Quartz.kCGEventKeyDown:
+                            kc = Quartz.CGEventGetIntegerValueField(event, Quartz.kCGKeyboardEventKeycode)
+                            if int(kc) == 53:
+                                QTimer.singleShot(0, self.callback)
+                    except Exception:
+                        pass
+                    return event
+                cb = Quartz.CGEventTapCallBack(handler)
+                self.tap = Quartz.CGEventTapCreate(
+                    Quartz.kCGHIDEventTap,
+                    Quartz.kCGHeadInsertEventTap,
+                    Quartz.kCGEventTapOptionListenOnly,
+                    mask,
+                    cb,
+                    None
+                )
+                self._ok = bool(self.tap)
+                self._ready.set()
+                if not self.tap:
+                    return
+                self.source = Quartz.CFMachPortCreateRunLoopSource(None, self.tap, 0)
+                self._rl = Quartz.CFRunLoopGetCurrent()
+                Quartz.CFRunLoopAddSource(self._rl, self.source, Quartz.kCFRunLoopCommonModes)
+                Quartz.CGEventTapEnable(self.tap, True)
+                Quartz.CFRunLoopRun()
+            except Exception:
+                if not self._ready.is_set():
+                    self._ok = False
+                    self._ready.set()
+                pass
+
+        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread.start()
+        self._ready.wait(1.0)
+        if not self._ok:
+            return False, "Input Monitoring not granted"
+        return True, "OK"
+
+    def stop(self):
+        if not IS_MAC:
+            return
+        try:
+            import Quartz
+            if self._rl is not None:
+                Quartz.CFRunLoopStop(self._rl)
+                self._rl = None
+            if self.tap:
+                Quartz.CGEventTapEnable(self.tap, False)
+                self.tap = None
+        except Exception:
+            pass
+
+class WindowsCtrlEscHotkey:
+    def __init__(self, callback):
+        self.callback = callback
+        self.thread = None
+        self.thread_id = None
+        self._stop = threading.Event()
+
+    def start(self):
+        if not IS_WIN:
+            return False, "Windows only"
+        import ctypes
+        from ctypes import wintypes
+        user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
+        MOD_CONTROL = 0x0002
+        VK_ESCAPE = 0x1B
+        WM_HOTKEY = 0x0312
+        HOTKEY_ID = 1
+        def loop():
+            self.thread_id = kernel32.GetCurrentThreadId()
+            if not user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL, VK_ESCAPE):
+                return
+            msg = wintypes.MSG()
+            while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
+                if msg.message == WM_HOTKEY and msg.wParam == HOTKEY_ID:
+                    QTimer.singleShot(0, self.callback)
+                user32.TranslateMessage(ctypes.byref(msg))
+                user32.DispatchMessageW(ctypes.byref(msg))
+            user32.UnregisterHotKey(None, HOTKEY_ID)
+        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread.start()
+        return True, "OK"
+
+    def stop(self):
+        if not IS_WIN:
+            return
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            WM_QUIT = 0x0012
+            self._stop.set()
+            if self.thread_id:
+                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
+        except Exception:
+            pass
+
 class WindowsGlobalEsc:
     def __init__(self, callback):
         self.callback = callback
@@ -554,8 +716,6 @@ class WindowsGlobalEsc:
         self.thread = None
         self.thread_id = None
         self._stop = threading.Event()
-        self._ready = threading.Event()
-        self._ok = False
 
     def start(self):
         if not IS_WIN:
@@ -565,29 +725,9 @@ class WindowsGlobalEsc:
             from ctypes import wintypes
         except Exception as e:
             return False, str(e)
-
-        try:
-            ULONG_PTR = wintypes.ULONG_PTR
-        except AttributeError:
-            ULONG_PTR = ctypes.c_size_t
-        try:
-            WPARAM = wintypes.WPARAM
-        except AttributeError:
-            WPARAM = ULONG_PTR
-        try:
-            LPARAM = wintypes.LPARAM
-        except AttributeError:
-            LPARAM = ctypes.c_ssize_t
-        try:
-            HHOOK = wintypes.HHOOK
-        except AttributeError:
-            HHOOK = ctypes.c_void_p
-
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
-
         WH_KEYBOARD_LL = 13
-        HC_ACTION = 0
         WM_KEYDOWN = 0x0100
         WM_SYSKEYDOWN = 0x0104
         WM_QUIT = 0x0012
@@ -598,23 +738,14 @@ class WindowsGlobalEsc:
                         ("scanCode", wintypes.DWORD),
                         ("flags", wintypes.DWORD),
                         ("time", wintypes.DWORD),
-                        ("dwExtraInfo", ULONG_PTR)]
+                        ("dwExtraInfo", wintypes.ULONG_PTR)]
 
-        LRESULT = ctypes.c_longlong if ctypes.sizeof(ctypes.c_void_p) == 8 else ctypes.c_long
-        HOOKPROC = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, WPARAM, LPARAM)
-        user32.SetWindowsHookExW.argtypes = [ctypes.c_int, HOOKPROC, wintypes.HINSTANCE, wintypes.DWORD]
-        user32.SetWindowsHookExW.restype = HHOOK
-        user32.CallNextHookEx.argtypes = [HHOOK, ctypes.c_int, WPARAM, LPARAM]
-        user32.CallNextHookEx.restype = LRESULT
-        user32.GetMessageW.argtypes = [ctypes.POINTER(wintypes.MSG), wintypes.HWND, wintypes.UINT, wintypes.UINT]
-        user32.GetMessageW.restype = ctypes.c_int
-        user32.TranslateMessage.argtypes = [ctypes.POINTER(wintypes.MSG)]
-        user32.DispatchMessageW.argtypes = [ctypes.POINTER(wintypes.MSG)]
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
 
-        @HOOKPROC
+        @LowLevelKeyboardProc
         def hook_proc(nCode, wParam, lParam):
             try:
-                if nCode == HC_ACTION and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
+                if nCode >= 0 and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
                     kb = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
                     if kb.vkCode == VK_ESCAPE:
                         QTimer.singleShot(0, self.callback)
@@ -626,12 +757,7 @@ class WindowsGlobalEsc:
 
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            hinst = kernel32.GetModuleHandleW(None)
-            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, hinst, 0)
-            if not self.hooked:
-                self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, None, 0)
-            self._ok = bool(self.hooked)
-            self._ready.set()
+            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
             if not self.hooked:
                 return
             msg = wintypes.MSG()
@@ -645,8 +771,7 @@ class WindowsGlobalEsc:
         try:
             self.thread = threading.Thread(target=loop, daemon=True)
             self.thread.start()
-            self._ready.wait(1.5)
-            return (True, "OK") if self._ok else (False, "Hook install failed")
+            return True, "OK"
         except Exception as e:
             return False, str(e)
 
@@ -658,30 +783,10 @@ class WindowsGlobalEsc:
             user32 = ctypes.windll.user32
             WM_QUIT = 0x0012
             self._stop.set()
-            if getattr(self, 'thread_id', None):
+            if self.thread_id:
                 user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
         except Exception:
             pass
-# Windows keyboard library ESC monitor
-class WindowsKeyboardEsc:
-    def __init__(self, callback):
-        self.callback = callback
-        self._hook = None
-    def start(self):
-        if not IS_WIN or kb_win is None:
-            return False, "keyboard not available"
-        try:
-            self._hook = kb_win.on_press_key('esc', lambda e: QTimer.singleShot(0, self.callback))
-            return True, "OK"
-        except Exception as e:
-            return False, str(e)
-    def stop(self):
-        try:
-            if self._hook is not None and kb_win is not None:
-                kb_win.unhook(self._hook)
-        except Exception:
-            pass
-        self._hook = None
 
 class GradientWidget(QWidget):
     def paintEvent(self, evt):
@@ -994,40 +1099,38 @@ class MainWindow(QMainWindow):
         root.addWidget(self.card, 0, Qt.AlignHCenter)
 
         root.addStretch(1)
-        hint = HintLabel("Press Esc to stop")
+        hint_text = "Press Ctrl+Esc to stop" if IS_WIN else "Press Esc to stop"
+        hint = HintLabel(hint_text)
         hint.setAlignment(Qt.AlignHCenter)
         root.addWidget(hint, alignment=Qt.AlignHCenter)
 
         self._set_state_idle()
 
-        if IS_MAC: ok, msg = mac_preflight_access()
-        else:      ok, msg = wl_preflight()
-        if not ok:
-            QMessageBox.critical(self, "Permission required", msg)
+        if IS_MAC:
+            self._ensure_mac_permissions()
+        else:
+            ok, msg = wl_preflight()
+            if not ok and IS_LINUX:
+                self._ensure_linux_requirements(msg)
+            elif not ok:
+                QMessageBox.critical(self, "Permission required", msg)
 
         if self.global_esc is None:
-            if IS_MAC and NSEvent is not None:
-                self.global_esc = MacGlobalEsc(self.on_stop)
-                esc_ok, esc_msg = self.global_esc.start()
+            if IS_MAC:
+                try:
+                    self.global_esc = MacEventTapEsc(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
+                except Exception:
+                    esc_ok, esc_msg = False, "event tap failed"
+                if not esc_ok and NSEvent is not None:
+                    self.global_esc = MacGlobalEsc(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             elif IS_WIN:
-                if kb_win is not None:
-                    self.global_esc = WindowsKeyboardEsc(self.on_stop)
-                    esc_ok, esc_msg = self.global_esc.start()
-                    if not esc_ok:
-                        self.global_esc = WindowsGlobalEsc(self.on_stop)
-                        esc_ok, esc_msg = self.global_esc.start()
-                else:
-                    self.global_esc = WindowsGlobalEsc(self.on_stop)
-                    esc_ok, esc_msg = self.global_esc.start()
-                if not esc_ok:
-                    self.global_esc = GlobalEsc(self.on_stop)
-                    esc_ok, esc_msg = self.global_esc.start()
-                if IS_WIN and not esc_ok:
-                    QMessageBox.warning(self, "Global ESC",
-                        f"Could not install a global Escape key hook.\n{esc_msg}\nTry running the app as Administrator.")
+                self.global_esc = WindowsCtrlEscHotkey(self.on_stop)
+                esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
@@ -1042,6 +1145,45 @@ class MainWindow(QMainWindow):
 
         self.adjustSize()
         self.setFixedSize(self.size())
+
+    def _ensure_mac_permissions(self):
+        ok, msg = mac_preflight_access()
+        if ok:
+            return True
+        while True:
+            box = QMessageBox(self)
+            box.setIcon(QMessageBox.Warning)
+            box.setWindowTitle("Permission required")
+            box.setText(msg)
+            btn_acc = box.addButton("Open Accessibility", QMessageBox.ActionRole)
+            btn_inp = box.addButton("Open Input Monitoring", QMessageBox.ActionRole)
+            btn_auto = box.addButton("Open Automation", QMessageBox.ActionRole)
+            btn_retry = box.addButton("Retry", QMessageBox.AcceptRole)
+            btn_quit = box.addButton("Quit", QMessageBox.RejectRole)
+            box.exec()
+            if box.clickedButton() is btn_acc:
+                mac_open_accessibility()
+                continue
+            if box.clickedButton() is btn_inp:
+                mac_open_input_monitoring()
+                continue
+            if box.clickedButton() is btn_auto:
+                mac_open_automation()
+                continue
+            if box.clickedButton() is btn_retry:
+                ok, msg = mac_preflight_access()
+                if ok:
+                    return True
+                continue
+            return False
+
+    def _ensure_linux_requirements(self, msg):
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Warning)
+        box.setWindowTitle("Automation requirements")
+        box.setText(msg)
+        box.addButton("OK", QMessageBox.AcceptRole)
+        box.exec()
 
     def _mk_btn(self, text, c0, c1):
         btn = QPushButton(text)
@@ -1094,11 +1236,15 @@ class MainWindow(QMainWindow):
             super().keyPressEvent(e)
 
     def closeEvent(self, e):
+        # Ensure worker is stopped/joined and hotkeys are cleaned up
         try:
-            if getattr(self, "global_esc", None):
-                self.global_esc.stop()
+            self.on_stop()
         finally:
-            super().closeEvent(e)
+            try:
+                if getattr(self, "global_esc", None):
+                    self.global_esc.stop()
+            finally:
+                super().closeEvent(e)
 
     def toggle_pin(self):
         self.is_pinned = not self.is_pinned
@@ -1205,11 +1351,19 @@ class MainWindow(QMainWindow):
             self._set_state_running()
 
     def on_stop(self):
+        # Stop countdown if pending
         if self.countdown_timer.isActive():
             self.countdown_timer.stop()
             self.countdown.setText("")
-        if self.worker and self.worker.isRunning():
-            self.worker.stop()
+        # Stop and join worker if running
+        if self.worker:
+            try:
+                self.worker.stop()
+                if self.worker.isRunning():
+                    self.worker.wait(5000)
+            finally:
+                self.worker = None
+        # Reset UI to idle
         self.stepper.show()
         self.remaining_center.hide()
         self._set_state_idle()
@@ -1218,6 +1372,7 @@ class MainWindow(QMainWindow):
         self.stepper.show()
         self.remaining_center.hide()
         self._set_state_idle()
+        self.worker = None
 
 def main():
     if IS_WIN:

@@ -55,6 +55,7 @@ def win_focus_browser():
         import ctypes
         from ctypes import wintypes
         user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
         SW_RESTORE = 9
         EnumWindowsProc = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
         targets = []
@@ -70,23 +71,35 @@ def win_focus_browser():
             title = buf.value
             if not title:
                 return True
-            if ("Microsoft Edge" in title or "Google Chrome" in title or "Mozilla Firefox" in title or "Brave" in title or "Opera" in title or " - Bing" in title or "Bing - " in title):
+            t = title.lower()
+            if ("edge" in t or "chrome" in t or "firefox" in t or "brave" in t or "opera" in t or " - bing" in t or "bing - " in t):
                 targets.append(hwnd)
                 return False
             return True
         user32.EnumWindows(enum_proc, 0)
-        if targets:
-            hwnd = targets[0]
-            try:
-                user32.AllowSetForegroundWindow(0xFFFFFFFF)
-            except Exception:
-                pass
-            user32.ShowWindowAsync(hwnd, SW_RESTORE)
+        if not targets:
+            return False
+        hwnd = targets[0]
+        try:
+            fg = user32.GetForegroundWindow()
+            ctid = kernel32.GetCurrentThreadId()
+            tid = user32.GetWindowThreadProcessId(fg, None)
+            user32.AttachThreadInput(ctid, tid, True)
+            user32.ShowWindow(hwnd, SW_RESTORE)
+            user32.BringWindowToTop(hwnd)
             user32.SetForegroundWindow(hwnd)
-            return True
+            user32.AttachThreadInput(ctid, tid, False)
+        except Exception:
+            pass
+        if user32.GetForegroundWindow() != hwnd:
+            VK_MENU = 0x12
+            KEYEVENTF_KEYUP = 0x0002
+            user32.keybd_event(VK_MENU, 0, 0, 0)
+            user32.SetForegroundWindow(hwnd)
+            user32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
+        return user32.GetForegroundWindow() == hwnd
     except Exception:
-        pass
-    return False
+        return False
 
 def linux_focus_browser():
     if not IS_LINUX:
@@ -732,6 +745,8 @@ class WindowsCtrlEscHotkey:
         self.thread = None
         self.thread_id = None
         self._stop = threading.Event()
+        self._ready = threading.Event()
+        self._ok = False
 
     def start(self):
         if not IS_WIN:
@@ -747,7 +762,10 @@ class WindowsCtrlEscHotkey:
         HOTKEY_ID = 1
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            if not user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE):
+            ok = user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE)
+            self._ok = bool(ok)
+            self._ready.set()
+            if not ok:
                 return
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
@@ -758,7 +776,8 @@ class WindowsCtrlEscHotkey:
             user32.UnregisterHotKey(None, HOTKEY_ID)
         self.thread = threading.Thread(target=loop, daemon=True)
         self.thread.start()
-        return True, "OK"
+        self._ready.wait(1.0)
+        return (self._ok, "OK" if self._ok else "RegisterHotKey failed")
 
     def stop(self):
         if not IS_WIN:
@@ -783,6 +802,8 @@ class WindowsLLCtrlAltEscHook:
         self._stop = threading.Event()
         self.ctrl = False
         self.alt = False
+        self._ready = threading.Event()
+        self._ok = False
 
     def start(self):
         if not IS_WIN:
@@ -843,6 +864,8 @@ class WindowsLLCtrlAltEscHook:
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
             self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
+            self._ok = bool(self.hooked)
+            self._ready.set()
             if not self.hooked:
                 return
             msg = wintypes.MSG()
@@ -853,12 +876,10 @@ class WindowsLLCtrlAltEscHook:
                 user32.UnhookWindowsHookEx(self.hooked)
                 self.hooked = None
 
-        try:
-            self.thread = threading.Thread(target=loop, daemon=True)
-            self.thread.start()
-            return True, "OK"
-        except Exception as e:
-            return False, str(e)
+        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread.start()
+        self._ready.wait(1.0)
+        return (self._ok, "OK" if self._ok else "Hook failed")
 
     def stop(self):
         if not IS_WIN:
@@ -880,6 +901,8 @@ class WindowsGlobalEsc:
         self.thread = None
         self.thread_id = None
         self._stop = threading.Event()
+        self._ready = threading.Event()
+        self._ok = False
 
     def start(self):
         if not IS_WIN:
@@ -894,7 +917,6 @@ class WindowsGlobalEsc:
         WH_KEYBOARD_LL = 13
         WM_KEYDOWN = 0x0100
         WM_SYSKEYDOWN = 0x0104
-        WM_QUIT = 0x0012
         VK_ESCAPE = 0x1B
 
         ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
@@ -922,6 +944,8 @@ class WindowsGlobalEsc:
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
             self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
+            self._ok = bool(self.hooked)
+            self._ready.set()
             if not self.hooked:
                 return
             msg = wintypes.MSG()
@@ -932,12 +956,10 @@ class WindowsGlobalEsc:
                 user32.UnhookWindowsHookEx(self.hooked)
                 self.hooked = None
 
-        try:
-            self.thread = threading.Thread(target=loop, daemon=True)
-            self.thread.start()
-            return True, "OK"
-        except Exception as e:
-            return False, str(e)
+        self.thread = threading.Thread(target=loop, daemon=True)
+        self.thread.start()
+        self._ready.wait(1.0)
+        return (self._ok, "OK" if self._ok else "Hook failed")
 
 # --- WindowsPynputCtrlAltEsc ---
 
@@ -982,19 +1004,6 @@ class WindowsPynputCtrlAltEsc:
             except Exception:
                 pass
             self.listener = None
-
-    def stop(self):
-        if not IS_WIN:
-            return
-        try:
-            import ctypes
-            user32 = ctypes.windll.user32
-            WM_QUIT = 0x0012
-            self._stop.set()
-            if self.thread_id:
-                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
-        except Exception:
-            pass
 
 class GradientWidget(QWidget):
     def paintEvent(self, evt):

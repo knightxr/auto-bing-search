@@ -665,14 +665,9 @@ class WindowsCtrlEscHotkey:
         VK_ESCAPE = 0x1B
         WM_HOTKEY = 0x0312
         HOTKEY_ID = 1
-        self._registered = threading.Event()
-        self._reg_ok = False
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            ok = user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE)
-            self._reg_ok = bool(ok)
-            self._registered.set()
-            if not ok:
+            if not user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE):
                 return
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
@@ -683,30 +678,51 @@ class WindowsCtrlEscHotkey:
             user32.UnregisterHotKey(None, HOTKEY_ID)
         self.thread = threading.Thread(target=loop, daemon=True)
         self.thread.start()
-        self._registered.wait(1.0)
-        return (True, "OK") if self._reg_ok else (False, "RegisterHotKey failed")
+        return True, "OK"
 
-# New class: WindowsComboEscHook
-class WindowsComboEscHook:
+    def stop(self):
+        if not IS_WIN:
+            return
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            WM_QUIT = 0x0012
+            self._stop.set()
+            if self.thread_id:
+                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
+        except Exception:
+            pass
+
+# WindowsLLCtrlAltEscHook: fallback low-level hook for Ctrl+Alt+Esc
+class WindowsLLCtrlAltEscHook:
     def __init__(self, callback):
         self.callback = callback
         self.hooked = None
         self.thread = None
         self.thread_id = None
         self._stop = threading.Event()
+        self.ctrl = False
+        self.alt = False
 
     def start(self):
         if not IS_WIN:
             return False, "Windows only"
-        import ctypes
-        from ctypes import wintypes
+        try:
+            import ctypes
+            from ctypes import wintypes
+        except Exception as e:
+            return False, str(e)
         user32 = ctypes.windll.user32
         kernel32 = ctypes.windll.kernel32
         WH_KEYBOARD_LL = 13
         WM_KEYDOWN = 0x0100
+        WM_KEYUP = 0x0101
         WM_SYSKEYDOWN = 0x0104
+        WM_SYSKEYUP = 0x0105
         VK_ESCAPE = 0x1B
         VK_CONTROL = 0x11
+        VK_LCONTROL = 0xA2
+        VK_RCONTROL = 0xA3
         VK_MENU = 0x12
 
         class KBDLLHOOKSTRUCT(ctypes.Structure):
@@ -717,18 +733,30 @@ class WindowsComboEscHook:
                         ("dwExtraInfo", wintypes.ULONG_PTR)]
 
         LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
+        state = self
 
         @LowLevelKeyboardProc
         def hook_proc(nCode, wParam, lParam):
             try:
-                if nCode >= 0 and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
+                if nCode >= 0:
                     kb = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
-                    if kb.vkCode == VK_ESCAPE:
-                        if (user32.GetAsyncKeyState(VK_CONTROL) & 0x8000) and (user32.GetAsyncKeyState(VK_MENU) & 0x8000):
-                            QTimer.singleShot(0, self.callback)
+                    msg = wParam
+                    vk = kb.vkCode
+                    if msg in (WM_KEYDOWN, WM_SYSKEYDOWN):
+                        if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
+                            state.ctrl = True
+                        elif vk == VK_MENU:
+                            state.alt = True
+                        elif vk == VK_ESCAPE and state.ctrl and state.alt:
+                            QTimer.singleShot(0, state.callback)
+                    elif msg in (WM_KEYUP, WM_SYSKEYUP):
+                        if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
+                            state.ctrl = False
+                        elif vk == VK_MENU:
+                            state.alt = False
             except Exception:
                 pass
-            return user32.CallNextHookEx(self.hooked, nCode, wParam, lParam)
+            return user32.CallNextHookEx(state.hooked, nCode, wParam, lParam)
 
         self.hook_proc = hook_proc
 
@@ -751,19 +779,6 @@ class WindowsComboEscHook:
             return True, "OK"
         except Exception as e:
             return False, str(e)
-
-    def stop(self):
-        if not IS_WIN:
-            return
-        try:
-            import ctypes
-            user32 = ctypes.windll.user32
-            WM_QUIT = 0x0012
-            self._stop.set()
-            if self.thread_id:
-                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
-        except Exception:
-            pass
 
     def stop(self):
         if not IS_WIN:
@@ -1201,7 +1216,10 @@ class MainWindow(QMainWindow):
                 self.global_esc = WindowsCtrlEscHotkey(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsComboEscHook(self.on_stop)
+                    self.global_esc = WindowsLLCtrlAltEscHook(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
+                if not esc_ok:
+                    self.global_esc = WindowsGlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)

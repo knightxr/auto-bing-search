@@ -665,9 +665,14 @@ class WindowsCtrlEscHotkey:
         VK_ESCAPE = 0x1B
         WM_HOTKEY = 0x0312
         HOTKEY_ID = 1
+        self._registered = threading.Event()
+        self._reg_ok = False
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            if not user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE):
+            ok = user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE)
+            self._reg_ok = bool(ok)
+            self._registered.set()
+            if not ok:
                 return
             msg = wintypes.MSG()
             while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
@@ -678,7 +683,87 @@ class WindowsCtrlEscHotkey:
             user32.UnregisterHotKey(None, HOTKEY_ID)
         self.thread = threading.Thread(target=loop, daemon=True)
         self.thread.start()
-        return True, "OK"
+        self._registered.wait(1.0)
+        return (True, "OK") if self._reg_ok else (False, "RegisterHotKey failed")
+
+# New class: WindowsComboEscHook
+class WindowsComboEscHook:
+    def __init__(self, callback):
+        self.callback = callback
+        self.hooked = None
+        self.thread = None
+        self.thread_id = None
+        self._stop = threading.Event()
+
+    def start(self):
+        if not IS_WIN:
+            return False, "Windows only"
+        import ctypes
+        from ctypes import wintypes
+        user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
+        WH_KEYBOARD_LL = 13
+        WM_KEYDOWN = 0x0100
+        WM_SYSKEYDOWN = 0x0104
+        VK_ESCAPE = 0x1B
+        VK_CONTROL = 0x11
+        VK_MENU = 0x12
+
+        class KBDLLHOOKSTRUCT(ctypes.Structure):
+            _fields_ = [("vkCode", wintypes.DWORD),
+                        ("scanCode", wintypes.DWORD),
+                        ("flags", wintypes.DWORD),
+                        ("time", wintypes.DWORD),
+                        ("dwExtraInfo", wintypes.ULONG_PTR)]
+
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(ctypes.c_long, ctypes.c_int, ctypes.c_ulong, ctypes.c_void_p)
+
+        @LowLevelKeyboardProc
+        def hook_proc(nCode, wParam, lParam):
+            try:
+                if nCode >= 0 and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
+                    kb = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
+                    if kb.vkCode == VK_ESCAPE:
+                        if (user32.GetAsyncKeyState(VK_CONTROL) & 0x8000) and (user32.GetAsyncKeyState(VK_MENU) & 0x8000):
+                            QTimer.singleShot(0, self.callback)
+            except Exception:
+                pass
+            return user32.CallNextHookEx(self.hooked, nCode, wParam, lParam)
+
+        self.hook_proc = hook_proc
+
+        def loop():
+            self.thread_id = kernel32.GetCurrentThreadId()
+            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
+            if not self.hooked:
+                return
+            msg = wintypes.MSG()
+            while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
+                user32.TranslateMessage(ctypes.byref(msg))
+                user32.DispatchMessageW(ctypes.byref(msg))
+            if self.hooked:
+                user32.UnhookWindowsHookEx(self.hooked)
+                self.hooked = None
+
+        try:
+            self.thread = threading.Thread(target=loop, daemon=True)
+            self.thread.start()
+            return True, "OK"
+        except Exception as e:
+            return False, str(e)
+
+    def stop(self):
+        if not IS_WIN:
+            return
+        try:
+            import ctypes
+            user32 = ctypes.windll.user32
+            WM_QUIT = 0x0012
+            self._stop.set()
+            if self.thread_id:
+                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
+        except Exception:
+            pass
 
     def stop(self):
         if not IS_WIN:
@@ -1115,6 +1200,9 @@ class MainWindow(QMainWindow):
             elif IS_WIN:
                 self.global_esc = WindowsCtrlEscHotkey(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
+                if not esc_ok:
+                    self.global_esc = WindowsComboEscHook(self.on_stop)
+                    esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()

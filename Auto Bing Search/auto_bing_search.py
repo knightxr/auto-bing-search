@@ -851,13 +851,16 @@ class WindowsLLCtrlAltEscHook:
         VK_MENU = 0x12
 
         ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
+        LRESULT = getattr(wintypes, "LRESULT", ctypes.c_ssize_t)
+        WPARAM = getattr(wintypes, "WPARAM", ctypes.c_size_t)
+        LPARAM = getattr(wintypes, "LPARAM", ctypes.c_ssize_t)
         class KBDLLHOOKSTRUCT(ctypes.Structure):
             _fields_ = [("vkCode", wintypes.DWORD),
                         ("scanCode", wintypes.DWORD),
                         ("flags", wintypes.DWORD),
                         ("time", wintypes.DWORD),
                         ("dwExtraInfo", ULONG_PTR)]
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(wintypes.LRESULT, ctypes.c_int, wintypes.WPARAM, wintypes.LPARAM)
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, WPARAM, LPARAM)
         state = self
 
         @LowLevelKeyboardProc
@@ -944,13 +947,16 @@ class WindowsGlobalEsc:
         VK_ESCAPE = 0x1B
 
         ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
+        LRESULT = getattr(wintypes, "LRESULT", ctypes.c_ssize_t)
+        WPARAM = getattr(wintypes, "WPARAM", ctypes.c_size_t)
+        LPARAM = getattr(wintypes, "LPARAM", ctypes.c_ssize_t)
         class KBDLLHOOKSTRUCT(ctypes.Structure):
             _fields_ = [("vkCode", wintypes.DWORD),
                         ("scanCode", wintypes.DWORD),
                         ("flags", wintypes.DWORD),
                         ("time", wintypes.DWORD),
                         ("dwExtraInfo", ULONG_PTR)]
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(wintypes.LRESULT, ctypes.c_int, wintypes.WPARAM, wintypes.LPARAM)
+        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, WPARAM, LPARAM)
 
         @LowLevelKeyboardProc
         def hook_proc(nCode, wParam, lParam):

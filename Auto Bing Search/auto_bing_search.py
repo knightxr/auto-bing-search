@@ -1,6 +1,6 @@
 import os, sys, time, random, platform, shutil, subprocess, webbrowser, threading
 from urllib.parse import quote_plus
-from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QSettings
+from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QSettings, QAbstractNativeEventFilter, QAbstractEventDispatcher
 from PySide6.QtGui import (
     QPalette, QColor, QFont, QPainter, QLinearGradient, QPen, QPixmap, QIcon, QShortcut, QKeySequence
 )
@@ -850,8 +850,6 @@ class WindowsLLCtrlAltQHook:
         VK_LCONTROL = 0xA2
         VK_RCONTROL = 0xA3
         VK_MENU = 0x12
-        VK_LMENU = 0xA4
-        VK_RMENU = 0xA5
 
         ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
         LRESULT = getattr(wintypes, "LRESULT", ctypes.c_ssize_t)
@@ -876,14 +874,14 @@ class WindowsLLCtrlAltQHook:
                     if msg in (WM_KEYDOWN, WM_SYSKEYDOWN):
                         if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
                             state.ctrl = True
-                        elif vk in (VK_MENU, VK_LMENU, VK_RMENU):
+                        elif vk == VK_MENU:
                             state.alt = True
                         elif vk == VK_Q and state.ctrl and state.alt:
                             QTimer.singleShot(0, state.callback)
                     elif msg in (WM_KEYUP, WM_SYSKEYUP):
                         if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
                             state.ctrl = False
-                        elif vk in (VK_MENU, VK_LMENU, VK_RMENU):
+                        elif vk == VK_MENU:
                             state.alt = False
             except Exception:
                 pass
@@ -1011,17 +1009,8 @@ class WindowsPynputCtrlAltQ:
                     self.ctrl = True
                 elif key in (pynput_keyboard.Key.alt, pynput_keyboard.Key.alt_l, pynput_keyboard.Key.alt_r):
                     self.alt = True
-                else:
-                    triggered = False
-                    if isinstance(key, pynput_keyboard.KeyCode):
-                        ch = getattr(key, "char", None)
-                        if ch and ch.lower() == 'q':
-                            triggered = True
-                    vk = getattr(key, "vk", None)
-                    if vk in (0x51, 81):
-                        triggered = True
-                    if triggered and self.ctrl and self.alt:
-                        QTimer.singleShot(0, self.callback)
+                elif isinstance(key, pynput_keyboard.KeyCode) and key.char and key.char.lower() == 'q' and self.ctrl and self.alt:
+                    QTimer.singleShot(0, self.callback)
             except Exception:
                 pass
         def on_release(key):
@@ -1046,6 +1035,34 @@ class WindowsPynputCtrlAltQ:
             except Exception:
                 pass
             self.listener = None
+
+
+# --- WinHotkeyFilter for native event handling on Windows ---
+class WinHotkeyFilter(QAbstractNativeEventFilter):
+    def __init__(self, callback):
+        super().__init__()
+        self.callback = callback
+    def nativeEventFilter(self, eventType, message):
+        try:
+            if eventType not in (b"windows_generic_MSG", b"windows_dispatcher_MSG"):
+                return False, 0
+            import ctypes
+            from ctypes import wintypes
+            class POINT(ctypes.Structure):
+                _fields_ = [("x", wintypes.LONG), ("y", wintypes.LONG)]
+            class MSG(ctypes.Structure):
+                _fields_ = [("hwnd", wintypes.HWND),
+                            ("message", wintypes.UINT),
+                            ("wParam", wintypes.WPARAM),
+                            ("lParam", wintypes.LPARAM),
+                            ("time", wintypes.DWORD),
+                            ("pt", POINT)]
+            msg = MSG.from_address(int(message))
+            if msg.message == 0x0312 and msg.wParam == 1:
+                QTimer.singleShot(0, self.callback)
+            return False, 0
+        except Exception:
+            return False, 0
 
 class GradientWidget(QWidget):
     def paintEvent(self, evt):
@@ -1236,6 +1253,9 @@ class MainWindow(QMainWindow):
 
         self.global_esc = None
 
+        self._win_hotkey_filter = None
+        self._HOTKEY_ID = 1
+
         self.esc_shortcut = QShortcut(QKeySequence(Qt.Key_Escape), self)
         self.esc_shortcut.activated.connect(self.on_stop)
 
@@ -1388,21 +1408,40 @@ class MainWindow(QMainWindow):
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             elif IS_WIN:
-                self.global_esc = WindowsPynputCtrlAltQ(self.on_stop)
+                self.global_esc = WindowsCtrlAltQHotkey(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsCtrlAltQHotkey(self.on_stop)
+                    self.global_esc = WindowsLLCtrlAltQHook(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsLLCtrlAltQHook(self.on_stop)
+                    self.global_esc = WindowsPynputCtrlAltQ(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
 
+        if IS_WIN:
+            QTimer.singleShot(0, self._setup_win_hotkey)
+
         self.adjustSize()
         self.setFixedSize(self.size())
 
+
+    def _setup_win_hotkey(self):
+        if not IS_WIN:
+            return
+        try:
+            import ctypes
+            from ctypes import wintypes
+            self._win_hotkey_filter = WinHotkeyFilter(self.on_stop)
+            QAbstractEventDispatcher.instance().installNativeEventFilter(self._win_hotkey_filter)
+            user32 = ctypes.windll.user32
+            MOD_ALT = 0x0001
+            MOD_CONTROL = 0x0002
+            VK_Q = 0x51
+            user32.RegisterHotKey(wintypes.HWND(int(self.winId())), self._HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_Q)
+        except Exception:
+            self._win_hotkey_filter = None
 
     def _show_mac_permissions_once(self):
         settings = QSettings("AutoBingSearch", "App")
@@ -1497,6 +1536,19 @@ class MainWindow(QMainWindow):
                 if getattr(self, "global_esc", None):
                     self.global_esc.stop()
             finally:
+                if IS_WIN:
+                    try:
+                        import ctypes
+                        from ctypes import wintypes
+                        user32 = ctypes.windll.user32
+                        user32.UnregisterHotKey(wintypes.HWND(int(self.winId())), self._HOTKEY_ID)
+                    except Exception:
+                        pass
+                    try:
+                        if getattr(self, "_win_hotkey_filter", None):
+                            QAbstractEventDispatcher.instance().removeNativeEventFilter(self._win_hotkey_filter)
+                    except Exception:
+                        pass
                 super().closeEvent(e)
 
     def toggle_pin(self):

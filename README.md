@@ -13,7 +13,7 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Global stop hotkey** (works unfocused once permissions are granted):
 
   * **macOS:** `Esc` (native event tap; falls back to AppKit/pynput).
-  * **Windows:** `Ctrl+Alt+S` *(use left Ctrl + left Alt)* — app registers a system hotkey and has two fallbacks.
+  * **Windows:** `Ctrl+Alt+S` — app registers a system hotkey and has two fallbacks.
   * **Linux:** `Esc` via `pynput`.
 * **Focus recovery**: before every search the app refocuses the browser window.
 * **Search box first, address bar if needed**: types into Bing’s on-page box; if that can’t be focused, it focuses the address bar and types the query like normal text.
@@ -54,7 +54,7 @@ Auto Bing Search/
 │  ├─ app.png
 │  ├─ app.icns
 │  └─ app.ico
-└─ .github/workflows/    (optional)
+└─ .github/workflows/
 ```
 
 The word list lives in `auto_bing_search.py` under `random_words`.
@@ -135,7 +135,7 @@ python auto_bing_search.py
   Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. The first-run helper can open those panes.
 
 * **Windows: Ctrl+Alt+S doesn’t trigger**
-  Make sure no other app uses that hotkey. Try running the host (Terminal/VS Code) as Administrator. Only one instance should register the hotkey.
+  Make sure no other app uses that hotkey or try running the app as Administrator.
 
 * **Linux: automation not working**
   Use an **Xorg** session. Install `wmctrl` and `xdotool` for better focusing (see packages above).

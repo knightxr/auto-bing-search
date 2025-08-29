@@ -68,8 +68,7 @@
           Download for macOS (Universal)
         </a>
         <a class="button" href="https://github.com/knightxr/auto-bing-search/releases/latest/download/auto-bing-search.exe">
-          <img src="https://registry.npmmirror.com/@lobehub/icons-static-svg/latest/files/icons/microsoft-color.svg"
-               alt="Windows / Microsoft" style="filter:none" />
+          <img src="https://registry.npmmirror.com/@lobehub/icons-static-svg/latest/files/icons/microsoft-color.svg" alt="Windows / Microsoft" style="filter:none" />
           Download for Windows
         </a>
         <a class="button" href="https://github.com/knightxr/auto-bing-search/releases/latest/download/auto-bing-search-linux.tar.gz">
@@ -92,9 +91,10 @@
             <li>Choose the number of searches, click <strong>Start</strong>.</li>
             <li>5-second countdown, then 10 seconds between each search.</li>
             <li><strong>Pause</strong> and <strong>Stop</strong> appear after starting.</li>
-            <li>Press <strong>Esc</strong> to stop (works unfocused once permissions are granted).</li>
+            <li><strong>Stop hotkey:</strong> macOS/Linux: <strong>Esc</strong>. Windows: <strong>Left Ctrl + Left Alt + S</strong>.</li>
             <li>Use the pin to keep the window on top.</li>
             <li>Hold <strong>Shift</strong> when clicking Start to show the login prompt again.</li>
+            <li>If the page search box can’t be focused, the app types in the browser’s address bar. Make sure <strong>Bing is your default search engine</strong> so the query runs on Bing.</li>
           </ul>
         </section>
 
@@ -105,6 +105,7 @@
             <ul>
               <li>Accessibility</li>
               <li>Input Monitoring</li>
+              <li>Automation (Apple Events)</li>
             </ul>
             <p class="muted">Grant them to the <em>installed</em> app in Applications.</p>
           </div>
@@ -117,9 +118,11 @@
 
       <h2>Troubleshooting</h2>
       <ul class="small">
-        <li><strong>Esc doesn’t stop on macOS:</strong> confirm the app has Accessibility &amp; Input Monitoring permissions.</li>
+        <li><strong>Esc doesn’t stop on macOS:</strong> confirm the app has Accessibility, Input Monitoring, and Automation permissions.</li>
+        <li><strong>Windows stop hotkey not working:</strong> use <strong>Left Ctrl + Left Alt + S</strong>. Close other apps with global keyboard hooks, or run as Administrator.</li>
         <li><strong>Nothing types on Linux:</strong> switch to an Xorg session and ensure common Qt/X11 libs are installed.</li>
         <li><strong>Edge isn’t used:</strong> the app prefers Edge when present, otherwise your default browser opens.</li>
+        <li><strong>Address-bar fallback:</strong> if the app types in the address bar, ensure <strong>Bing is the default search engine</strong> in your browser.</li>
       </ul>
 
       <p class="small muted footer">Source: <a href="https://github.com/knightxr/auto-bing-search">github.com/knightxr/auto-bing-search</a></p>

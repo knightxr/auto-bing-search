@@ -763,7 +763,8 @@ class MacEventTapEsc:
         except Exception:
             pass
 
-class WindowsCtrlEscHotkey:
+# Replacement: Ctrl+Alt+Q hotkey for Windows
+class WindowsCtrlAltQHotkey:
     def __init__(self, callback):
         self.callback = callback
         self.thread = None
@@ -781,12 +782,12 @@ class WindowsCtrlEscHotkey:
         kernel32 = ctypes.windll.kernel32
         MOD_ALT = 0x0001
         MOD_CONTROL = 0x0002
-        VK_ESCAPE = 0x1B
+        VK_Q = 0x51
         WM_HOTKEY = 0x0312
         HOTKEY_ID = 1
         def loop():
             self.thread_id = kernel32.GetCurrentThreadId()
-            ok = user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_ESCAPE)
+            ok = user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_Q)
             self._ok = bool(ok)
             self._ready.set()
             if not ok:
@@ -816,8 +817,8 @@ class WindowsCtrlEscHotkey:
         except Exception:
             pass
 
-# WindowsLLCtrlAltEscHook: fallback low-level hook for Ctrl+Alt+Esc
-class WindowsLLCtrlAltEscHook:
+# WindowsLLCtrlAltQHook: fallback low-level hook for Ctrl+Alt+Q
+class WindowsLLCtrlAltQHook:
     def __init__(self, callback):
         self.callback = callback
         self.hooked = None
@@ -844,7 +845,7 @@ class WindowsLLCtrlAltEscHook:
         WM_KEYUP = 0x0101
         WM_SYSKEYDOWN = 0x0104
         WM_SYSKEYUP = 0x0105
-        VK_ESCAPE = 0x1B
+        VK_Q = 0x51
         VK_CONTROL = 0x11
         VK_LCONTROL = 0xA2
         VK_RCONTROL = 0xA3
@@ -875,7 +876,7 @@ class WindowsLLCtrlAltEscHook:
                             state.ctrl = True
                         elif vk == VK_MENU:
                             state.alt = True
-                        elif vk == VK_ESCAPE and state.ctrl and state.alt:
+                        elif vk == VK_Q and state.ctrl and state.alt:
                             QTimer.singleShot(0, state.callback)
                     elif msg in (WM_KEYUP, WM_SYSKEYUP):
                         if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
@@ -991,9 +992,9 @@ class WindowsGlobalEsc:
         self._ready.wait(1.0)
         return (self._ok, "OK" if self._ok else "Hook failed")
 
-# --- WindowsPynputCtrlAltEsc ---
+# --- WindowsPynputCtrlAltQ ---
 
-class WindowsPynputCtrlAltEsc:
+class WindowsPynputCtrlAltQ:
     def __init__(self, callback):
         self.callback = callback
         self.listener = None
@@ -1008,7 +1009,7 @@ class WindowsPynputCtrlAltEsc:
                     self.ctrl = True
                 elif key in (pynput_keyboard.Key.alt, pynput_keyboard.Key.alt_l, pynput_keyboard.Key.alt_r):
                     self.alt = True
-                elif key == pynput_keyboard.Key.esc and self.ctrl and self.alt:
+                elif isinstance(key, pynput_keyboard.KeyCode) and key.char and key.char.lower() == 'q' and self.ctrl and self.alt:
                     QTimer.singleShot(0, self.callback)
             except Exception:
                 pass
@@ -1346,7 +1347,7 @@ class MainWindow(QMainWindow):
         root.addWidget(self.card, 0, Qt.AlignHCenter)
 
         root.addStretch(1)
-        hint_text = "Press Ctrl+Alt+Esc to stop" if IS_WIN else "Press Esc to stop"
+        hint_text = "Press Ctrl+Alt+Q to stop" if IS_WIN else "Press Esc to stop"
         hint = HintLabel(hint_text)
         hint.setAlignment(Qt.AlignHCenter)
         root.addWidget(hint, alignment=Qt.AlignHCenter)
@@ -1376,13 +1377,13 @@ class MainWindow(QMainWindow):
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             elif IS_WIN:
-                self.global_esc = WindowsLLCtrlAltEscHook(self.on_stop)
+                self.global_esc = WindowsCtrlAltQHotkey(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsGlobalEsc(self.on_stop)
+                    self.global_esc = WindowsLLCtrlAltQHook(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsPynputCtrlAltEsc(self.on_stop)
+                    self.global_esc = WindowsPynputCtrlAltQ(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)

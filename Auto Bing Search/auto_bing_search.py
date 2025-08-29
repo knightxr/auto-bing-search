@@ -534,15 +534,17 @@ class Automator:
                 mac_press_return()
                 return
             except Exception:
-                # Fallback: same-tab navigation to the results URL
                 try:
-                    self._mac_set_front_url(self._bing_url(term))
+                    mac_activate(self.browser_mac)
+                    time.sleep(0.08)
+                    mac_focus_omnibox()
+                    time.sleep(0.05)
+                    mac_type_human(term)
+                    mac_press_return()
                     self._first_search = False
                     return
                 except Exception:
-                    open_browser(prefer_edge=True, url=self._bing_url(term))
-                    self._first_search = False
-                    return
+                    pass
 
         try:
             if self._first_search:
@@ -559,12 +561,10 @@ class Automator:
             human_type_pyautogui(term)
             pyautogui.press('enter')
         except Exception:
-            # Same-tab fallback via Ctrl+L -> results URL
             try:
-                from urllib.parse import quote_plus as _qp
                 pyautogui.hotkey('ctrl', 'l')
                 time.sleep(0.08)
-                pyautogui.typewrite(f"{BING_HOME}/search?q={_qp(term)}", interval=0.02)
+                human_type_pyautogui(term)
                 pyautogui.press('enter')
                 self._first_search = False
             except Exception:

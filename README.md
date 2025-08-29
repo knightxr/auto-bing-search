@@ -10,15 +10,13 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Start / Pause / Stop** controls with state-aware buttons.
 * **Pin on top** toggle with visual highlight.
 * **Remaining counter** appears when the run starts.
-* **Global `Esc` to stop**, even when the app isn’t focused:
+* **Global stop hotkey** (works unfocused once permissions are granted):
 
-  * macOS: native AppKit monitor (preferred), falls back to `pynput`.
-  * Windows/Linux: `pynput`.
-* **Login prompt** on first run (or when forced with **Shift+Start**):
-
-  * “I’m logged in” or “Sign in”.
-  * **Remember** checkbox in the dialog and a compact checkbox in the title bar.
-* **Human-like typing** and tab/address-bar focus.
+  * **macOS:** `Esc` (native event tap; falls back to AppKit/pynput).
+  * **Windows:** `Ctrl+Alt+S` *(use left Ctrl + left Alt)* — app registers a system hotkey and has two fallbacks.
+  * **Linux:** `Esc` via `pynput`.
+* **Focus recovery**: before every search the app refocuses the browser window.
+* **Search box first, address bar if needed**: types into Bing’s on-page box; if that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
 * **Single file** distribution on Windows & Linux; **Universal 2** app on macOS.
 
@@ -27,11 +25,22 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 ## How it works (per OS)
 
 * **macOS**
-  Uses AppleScript / System Events to activate the browser, focus the address bar, type, and press Return.
-  Needs **Accessibility** and **Input Monitoring** permissions (System Settings → Privacy & Security).
 
-* **Windows & Linux**
-  Uses `pyautogui` for keyboard automation. On Linux, X11 is recommended (Wayland can block global hotkeys and automation).
+  * Activates your browser, focuses Bing’s search box, types human-like, and presses Return.
+  * If the box can’t be focused, it hits **Cmd+L**, types the query in the address bar, and presses Return.
+  * On first launch, a **one-time permissions helper** appears with buttons to open **Accessibility**, **Input Monitoring**, and **Automation** panes.
+
+* **Windows**
+
+  * Global stop: **Ctrl+Alt+S** (left keys recommended). Registered via `RegisterHotKey` with low-level and pynput fallbacks.
+  * Types into Bing’s box; if that fails, uses **Ctrl+L** to type in the address bar and presses Enter.
+  * The app attempts to bring a major browser (Edge/Chrome/Firefox/Brave/Opera) to the foreground before each search.
+
+* **Linux**
+
+  * Uses `pyautogui` for typing; `Esc` stops via `pynput`.
+  * X11 recommended (Wayland may block automation). If available, `wmctrl`/`xdotool` help focusing the browser.
+  * Falls back to **Ctrl+L** → address bar typing when the on-page box can’t be focused.
 
 ---
 
@@ -39,36 +48,36 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 
 ```
 Auto Bing Search/
-├─ auto_bing_search.py        # main app
-├─ requirements.txt           # runtime deps
+├─ auto_bing_search.py
+├─ requirements.txt
 ├─ assets/
-│  ├─ app.png                 # source icon (1024x1024)
-│  ├─ app.icns                # mac app icon
-│  └─ app.ico                 # windows icon (multi-size)
-└─ .github/workflows/         # optional: CI build actions
+│  ├─ app.png
+│  ├─ app.icns
+│  └─ app.ico
+└─ .github/workflows/    (optional)
 ```
 
-> The word list is embedded in `auto_bing_search.py` under `random_words` (single-spaced entries).
+The word list lives in `auto_bing_search.py` under `random_words`.
 
 ---
 
 ## Requirements
 
 * **Python 3.12** recommended.
-* **Deps:** installed from `requirements.txt`:
+* Install from `requirements.txt`:
 
   * `PySide6`
   * `pynput`
-  * `pyobjc` *(macOS only, installed automatically via `pip` when on mac)*
-  * `pyautogui` *(Windows/Linux only)*
-* On **Linux**, install system libs for Qt apps (Ubuntu example):
+  * `pyautogui` *(Windows/Linux)*
+  * `pyobjc` *(macOS only)*
+* **Linux packages** (Ubuntu example):
 
   ```bash
   sudo apt-get update
   sudo apt-get install -y --no-install-recommends \
     libxkbcommon-x11-0 libxcb-xinerama0 libxcb-icccm4 libxcb-image0 \
     libxcb-keysyms1 libxcb-render0 libxcb-shape0 libxcb-xfixes0 \
-    libxcb-randr0 libdbus-1-3 libgl1
+    libxcb-randr0 libdbus-1-3 libgl1 wmctrl xdotool
   ```
 
 ---
@@ -96,8 +105,6 @@ python -m pip install -r requirements.txt
 python auto_bing_search.py
 ```
 
-> Do **not** commit the `.venv/` folder; use `requirements.txt`.
-
 ---
 
 ## Using the app
@@ -105,39 +112,42 @@ python auto_bing_search.py
 1. Launch the app.
 2. If prompted, confirm whether you’re signed into Bing.
 
-   * **Sign in** opens the Bing sign-in page.
+   * **Sign in** opens Bing’s sign-in page.
    * Check **Remember** to skip the prompt next time (Shift+Start always shows it).
-3. Adjust the count with the **– / +** stepper.
-4. Click **Start** → a **5-second** pre-run countdown shows.
+3. Set a count with the stepper and click **Start**.
+4. A **5-second** countdown appears; the search loop starts.
 5. During the run:
 
    * **Pause** toggles pause/resume.
    * **Stop** ends the session.
-   * **Esc** stops immediately (works unfocused once permissions are granted).
-6. **Pin** keeps the window always on top (button highlights when active).
+   * **Global stop hotkeys**:
+
+     * macOS: **Esc**
+     * Windows: **Ctrl+Alt+S**
+     * Linux: **Esc**
+6. **Pin** keeps the window on top.
 
 ---
 
 ## Troubleshooting
 
-* **Esc doesn’t stop when unfocused (macOS)**
-  Open the bundled app from `/Applications` and grant:
+* **macOS: stop hotkey not working**
+  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. The first-run helper can open those panes.
 
-  * *System Settings → Privacy & Security → Accessibility*
-  * *Input Monitoring*
-    If you run from Terminal/VS Code, grant those hosts too.
+* **Windows: Ctrl+Alt+S doesn’t trigger**
+  Make sure no other app uses that hotkey. Try running the host (Terminal/VS Code) as Administrator. Only one instance should register the hotkey.
 
-* **Linux automation not working**
-  Use an **Xorg** session (Wayland may block automation). Ensure the listed Qt/X11 libs are installed.
+* **Linux: automation not working**
+  Use an **Xorg** session. Install `wmctrl` and `xdotool` for better focusing (see packages above).
 
-* **Edge not opening**
-  The app prefers Edge if found, otherwise falls back to the default browser.
+* **Search goes to the URL bar**
+  That’s the intended fallback when the on-page box can’t be focused; it still types the query like normal text and presses Enter. **Bing must be your browser’s default search engine for this fallback to search Bing; otherwise your default engine will be used.**
 
 ---
 
 ## Notes
 
-* The interval between searches is **10 seconds**.
-* Pre-run countdown is **5 seconds**.
-* Hold **Shift** while clicking **Start** to always show the login dialog.
+* 10s delay between searches; 5s pre-run countdown.
+* Browser is refocused before **every** search.
+* Hold **Shift** while clicking **Start** to force the login dialog.
 * Settings are stored via `QSettings` under `AutoBingSearch/App`.

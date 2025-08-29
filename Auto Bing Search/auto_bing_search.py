@@ -850,6 +850,8 @@ class WindowsLLCtrlAltQHook:
         VK_LCONTROL = 0xA2
         VK_RCONTROL = 0xA3
         VK_MENU = 0x12
+        VK_LMENU = 0xA4
+        VK_RMENU = 0xA5
 
         ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
         LRESULT = getattr(wintypes, "LRESULT", ctypes.c_ssize_t)
@@ -874,14 +876,14 @@ class WindowsLLCtrlAltQHook:
                     if msg in (WM_KEYDOWN, WM_SYSKEYDOWN):
                         if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
                             state.ctrl = True
-                        elif vk == VK_MENU:
+                        elif vk in (VK_MENU, VK_LMENU, VK_RMENU):
                             state.alt = True
                         elif vk == VK_Q and state.ctrl and state.alt:
                             QTimer.singleShot(0, state.callback)
                     elif msg in (WM_KEYUP, WM_SYSKEYUP):
                         if vk in (VK_LCONTROL, VK_RCONTROL, VK_CONTROL):
                             state.ctrl = False
-                        elif vk == VK_MENU:
+                        elif vk in (VK_MENU, VK_LMENU, VK_RMENU):
                             state.alt = False
             except Exception:
                 pass
@@ -1009,8 +1011,17 @@ class WindowsPynputCtrlAltQ:
                     self.ctrl = True
                 elif key in (pynput_keyboard.Key.alt, pynput_keyboard.Key.alt_l, pynput_keyboard.Key.alt_r):
                     self.alt = True
-                elif isinstance(key, pynput_keyboard.KeyCode) and key.char and key.char.lower() == 'q' and self.ctrl and self.alt:
-                    QTimer.singleShot(0, self.callback)
+                else:
+                    triggered = False
+                    if isinstance(key, pynput_keyboard.KeyCode):
+                        ch = getattr(key, "char", None)
+                        if ch and ch.lower() == 'q':
+                            triggered = True
+                    vk = getattr(key, "vk", None)
+                    if vk in (0x51, 81):
+                        triggered = True
+                    if triggered and self.ctrl and self.alt:
+                        QTimer.singleShot(0, self.callback)
             except Exception:
                 pass
         def on_release(key):
@@ -1377,13 +1388,13 @@ class MainWindow(QMainWindow):
                     self.global_esc = GlobalEsc(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             elif IS_WIN:
-                self.global_esc = WindowsCtrlAltQHotkey(self.on_stop)
+                self.global_esc = WindowsPynputCtrlAltQ(self.on_stop)
                 esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsLLCtrlAltQHook(self.on_stop)
+                    self.global_esc = WindowsCtrlAltQHotkey(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
                 if not esc_ok:
-                    self.global_esc = WindowsPynputCtrlAltQ(self.on_stop)
+                    self.global_esc = WindowsLLCtrlAltQHook(self.on_stop)
                     esc_ok, esc_msg = self.global_esc.start()
             else:
                 self.global_esc = GlobalEsc(self.on_stop)

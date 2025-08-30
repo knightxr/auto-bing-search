@@ -55,6 +55,26 @@
         .grid{grid-template-columns:1fr 1fr}
       }
       .footer{margin-top:28px}
+
+      /* Screenshot block */
+      figure.shot{
+        margin:8px 0 14px;
+        border:1px solid var(--border);
+        border-radius:12px;
+        overflow:hidden;
+        background:#1b1e25;
+      }
+      figure.shot img{
+        display:block;
+        width:100%;
+        height:auto;
+      }
+      figure.shot figcaption{
+        padding:8px 10px;
+        font-size:.9rem;
+        color:var(--muted);
+        border-top:1px solid var(--border);
+      }
     </style>
   </head>
   <body>
@@ -99,6 +119,12 @@
         </section>
 
         <section>
+          <h2>Preview</h2>
+          <figure class="shot">
+            <img src="screenshot.png" alt="Auto Bing Search app screenshot" loading="lazy" />
+            <figcaption>Simple, minimal UI</figcaption>
+          </figure>
+
           <h2>Permissions</h2>
           <div class="callout small">
             <p><strong>macOS:</strong> grant these in <em>System Settings → Privacy &amp; Security</em>:</p>
@@ -107,7 +133,7 @@
               <li>Input Monitoring</li>
               <li>Automation (Apple Events)</li>
             </ul>
-            <p class="muted">Grant them to the <em>installed</em> app in Applications.</p>
+            <p class="muted">Grant them to the <em>installed</em> app in Applications. Tip: hold <strong>Control</strong> and click <strong>Start</strong> to open the helper.</p>
           </div>
 
           <div class="callout small">

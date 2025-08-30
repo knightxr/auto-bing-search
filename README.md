@@ -18,7 +18,7 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Focus recovery**: before every search the app refocuses the browser window.
 * **Search box first, address bar if needed**: types into Bing’s on-page box; if that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
-* **Permissions quick-open on macOS**: hold **Control** and click **Start** to open the helper any time.
+* **Permissions quick-open on macOS**: hold **Option** and click **Start** to open the helper any time.
 * **Single file** distribution on Windows & Linux; **Universal 2** app on macOS.
 
 ---
@@ -30,7 +30,7 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
   * Activates your browser, focuses Bing’s search box, types human-like, and presses Return.
   * If the box can’t be focused, it hits **Cmd+L**, types the query in the address bar, and presses Return.
   * On first launch, a one-time permissions helper appears with buttons for **Accessibility**, **Input Monitoring**, and **Automation**.
-  * Need it again later? Hold **Control** and click **Start** to reopen the helper.
+  * Need it again later? Hold **Option** and click **Start** to reopen the helper.
 
 * **Windows**
 
@@ -128,14 +128,14 @@ python auto_bing_search.py
      * Windows: **Ctrl+Alt+S**
      * Linux: **Esc**
 6. **Pin** keeps the window on top.
-7. **macOS tip**: hold **Control** and click **Start** to open the permissions helper.
+7. **macOS tip**: hold **Option** and click **Start** to open the permissions helper.
 
 ---
 
 ## Troubleshooting
 
 * **macOS: stop hotkey not working**
-  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. You can also hold **Control** and click **Start** to open those panes.
+  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. You can also hold **Option** and click **Start** to open those panes.
 * **Windows: Ctrl+Alt+S doesn’t trigger**
   Make sure no other app uses that hotkey or try running the app as Administrator.
 * **Linux: automation not working**

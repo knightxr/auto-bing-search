@@ -13,11 +13,12 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Global stop hotkey** (works unfocused once permissions are granted):
 
   * **macOS:** `Esc` (native event tap; falls back to AppKit/pynput).
-  * **Windows:** `Ctrl+Alt+S` — app registers a system hotkey and has two fallbacks.
+  * **Windows:** `Ctrl+Alt+S` — system hotkey with two fallbacks.
   * **Linux:** `Esc` via `pynput`.
 * **Focus recovery**: before every search the app refocuses the browser window.
 * **Search box first, address bar if needed**: types into Bing’s on-page box; if that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
+* **Permissions quick-open on macOS**: hold **Control** and click **Start** to open the helper any time.
 * **Single file** distribution on Windows & Linux; **Universal 2** app on macOS.
 
 ---
@@ -28,7 +29,8 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 
   * Activates your browser, focuses Bing’s search box, types human-like, and presses Return.
   * If the box can’t be focused, it hits **Cmd+L**, types the query in the address bar, and presses Return.
-  * On first launch, a **one-time permissions helper** appears with buttons to open **Accessibility**, **Input Monitoring**, and **Automation** panes.
+  * On first launch, a one-time permissions helper appears with buttons for **Accessibility**, **Input Monitoring**, and **Automation**.
+  * Need it again later? Hold **Control** and click **Start** to reopen the helper.
 
 * **Windows**
 
@@ -126,20 +128,18 @@ python auto_bing_search.py
      * Windows: **Ctrl+Alt+S**
      * Linux: **Esc**
 6. **Pin** keeps the window on top.
+7. **macOS tip**: hold **Control** and click **Start** to open the permissions helper.
 
 ---
 
 ## Troubleshooting
 
 * **macOS: stop hotkey not working**
-  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. The first-run helper can open those panes.
-
+  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. You can also hold **Control** and click **Start** to open those panes.
 * **Windows: Ctrl+Alt+S doesn’t trigger**
   Make sure no other app uses that hotkey or try running the app as Administrator.
-
 * **Linux: automation not working**
   Use an **Xorg** session. Install `wmctrl` and `xdotool` for better focusing (see packages above).
-
 * **Search goes to the URL bar**
   That’s the intended fallback when the on-page box can’t be focused; it still types the query like normal text and presses Enter. **Bing must be your browser’s default search engine for this fallback to search Bing; otherwise your default engine will be used.**
 

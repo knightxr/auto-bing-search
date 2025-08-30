@@ -2,6 +2,10 @@
 
 A tiny cross-platform desktop app that opens your browser and runs a series of Bing searches using a curated word list. Built with **PySide6** and a minimal, modern UI.
 
+<p align="center">
+  <img src="docs/screenshot.png" alt="Auto Bing Search screenshot" width="650">
+</p>
+
 ---
 
 ## Highlights
@@ -47,107 +51,3 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 ---
 
 ## Project layout
-
-```
-Auto Bing Search/
-├─ auto_bing_search.py
-├─ requirements.txt
-├─ assets/
-│  ├─ app.png
-│  ├─ app.icns
-│  └─ app.ico
-└─ .github/workflows/
-```
-
-The word list lives in `auto_bing_search.py` under `random_words`.
-
----
-
-## Requirements
-
-* **Python 3.12** recommended.
-* Install from `requirements.txt`:
-
-  * `PySide6`
-  * `pynput`
-  * `pyautogui` *(Windows/Linux)*
-  * `pyobjc` *(macOS only)*
-* **Linux packages** (Ubuntu example):
-
-  ```bash
-  sudo apt-get update
-  sudo apt-get install -y --no-install-recommends \
-    libxkbcommon-x11-0 libxcb-xinerama0 libxcb-icccm4 libxcb-image0 \
-    libxcb-keysyms1 libxcb-render0 libxcb-shape0 libxcb-xfixes0 \
-    libxcb-randr0 libdbus-1-3 libgl1 wmctrl xdotool
-  ```
-
----
-
-## Setup (dev)
-
-### macOS / Linux
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python auto_bing_search.py
-```
-
-### Windows (PowerShell)
-
-```powershell
-py -m venv .venv
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python auto_bing_search.py
-```
-
----
-
-## Using the app
-
-1. Launch the app.
-2. If prompted, confirm whether you’re signed into Bing.
-
-   * **Sign in** opens Bing’s sign-in page.
-   * Check **Remember** to skip the prompt next time (Shift+Start always shows it).
-3. Set a count with the stepper and click **Start**.
-4. A **5-second** countdown appears; the search loop starts.
-5. During the run:
-
-   * **Pause** toggles pause/resume.
-   * **Stop** ends the session.
-   * **Global stop hotkeys**:
-
-     * macOS: **Esc**
-     * Windows: **Ctrl+Alt+S**
-     * Linux: **Esc**
-6. **Pin** keeps the window on top.
-7. **macOS tip**: hold **Option** and click **Start** to open the permissions helper.
-
----
-
-## Troubleshooting
-
-* **macOS: stop hotkey not working**
-  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. You can also hold **Option** and click **Start** to open those panes.
-* **Windows: Ctrl+Alt+S doesn’t trigger**
-  Make sure no other app uses that hotkey or try running the app as Administrator.
-* **Linux: automation not working**
-  Use an **Xorg** session. Install `wmctrl` and `xdotool` for better focusing (see packages above).
-* **Search goes to the URL bar**
-  That’s the intended fallback when the on-page box can’t be focused; it still types the query like normal text and presses Enter. **Bing must be your browser’s default search engine for this fallback to search Bing; otherwise your default engine will be used.**
-
----
-
-## Notes
-
-* 10s delay between searches; 5s pre-run countdown.
-* Browser is refocused before **every** search.
-* Hold **Shift** while clicking **Start** to force the login dialog.
-* Settings are stored via `QSettings` under `AutoBingSearch/App`.

@@ -1,8 +1,8 @@
 import os, sys, time, random, platform, shutil, subprocess, webbrowser, threading
 from urllib.parse import quote_plus
-from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSize, QSettings, QAbstractNativeEventFilter, QAbstractEventDispatcher
+from PySide6.QtCore import Qt, QTimer, QThread, Signal, QSettings, QAbstractNativeEventFilter, QAbstractEventDispatcher
 from PySide6.QtGui import (
-    QPalette, QColor, QFont, QPainter, QLinearGradient, QPen, QPixmap, QIcon, QShortcut, QKeySequence
+    QColor, QFont, QPainter, QLinearGradient, QRadialGradient, QIcon, QShortcut, QKeySequence
 )
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout,
@@ -47,7 +47,7 @@ IS_WIN = SYSTEM == "Windows"
 
 IS_LINUX = SYSTEM == "Linux"
 
-# --- Focus browser helpers for Win/Linux ---
+ 
 def win_focus_browser():
     if not IS_WIN:
         return False
@@ -443,9 +443,33 @@ def _focus_bing_box_win_linux():
         pass
 
 class Automator:
+    def _mac_get_front_url(self) -> str | None:
+        try:
+            if self.browser_mac == "Safari":
+                r = _osa('tell application "Safari" to get URL of front document')
+            else:
+                r = _osa(f'tell application "{self.browser_mac}" to tell front window to get URL of active tab')
+            s = r.stdout.decode("utf-8", errors="ignore").strip()
+            return s if s else None
+        except Exception:
+            return None
+
+    def _mac_type_in_omnibox(self, term: str) -> bool:
+        try:
+            mac_activate(self.browser_mac)
+            time.sleep(0.10)
+            mac_focus_omnibox()
+            time.sleep(0.05)
+            mac_type_human(term)
+            mac_press_return()
+            return True
+        except Exception:
+            try:
+                return self._mac_set_front_url(self._bing_url(term))
+            except Exception:
+                return False
     def __init__(self):
         self.browser_mac = mac_pick_browser() if IS_MAC else None
-        self._first = True
         self._launched = False
         self._first_search = True
 
@@ -509,43 +533,60 @@ class Automator:
         return f"{BING_HOME}/search?q={quote_plus(term)}"
 
     def search_once(self, term: str):
-        """Type into Bing's search box in the SAME TAB. For the first search, ensure focus; thereafter use the results-page auto-focus behavior (any letter focuses the box), then Ctrl/Cmd+A and type. Falls back to direct URL if something goes wrong."""
         self._refocus_browser()
         if IS_MAC:
             try:
                 mac_activate(self.browser_mac)
                 time.sleep(0.10)
+                prev_url = self._mac_get_front_url()
                 if self._first_search:
-                    if not self._focus_bing_box_mac():
-                        mac_activate(self.browser_mac)
-                        time.sleep(0.2)
-                        mac_click_focus_region()
-                        time.sleep(0.15)
+                    focused = False
+                    try:
+                        focused = self._focus_bing_box_mac()
+                    except Exception:
+                        focused = False
+                    if not focused:
+                        try:
+                            mac_activate(self.browser_mac)
+                            time.sleep(0.12)
+                            mac_click_focus_region()
+                            time.sleep(0.15)
+                            _osa('tell application "System Events" to keystroke "a" using command down')
+                            _osa('tell application "System Events" to key code 51')
+                            focused = True
+                        except Exception:
+                            focused = False
+                    if focused:
+                        mac_type_human(term)
+                        mac_press_return()
+                        self._first_search = False
+                        time.sleep(0.8)
+                        curr = self._mac_get_front_url()
+                        if prev_url and curr and prev_url == curr:
+                            self._mac_type_in_omnibox(term)
+                        return
+                    else:
+                        self._mac_type_in_omnibox(term)
+                        self._first_search = False
+                        return
+                else:
+                    try:
+                        _osa('tell application "System Events" to keystroke "a"')
                         _osa('tell application "System Events" to keystroke "a" using command down')
-                        _osa('tell application "System Events" to key code 51')
-                    mac_type_human(term)
-                    mac_press_return()
-                    self._first_search = False
-                    return
-                # On Bing results pages, any letter focuses the box. Then Cmd+A to clear, type, Enter.
-                _osa('tell application "System Events" to keystroke "a"')
-                _osa('tell application "System Events" to keystroke "a" using command down')
-                mac_type_human(term)
-                mac_press_return()
-                return
+                        mac_type_human(term)
+                        mac_press_return()
+                        time.sleep(0.6)
+                        curr = self._mac_get_front_url()
+                        if prev_url and curr and prev_url == curr:
+                            self._mac_type_in_omnibox(term)
+                        return
+                    except Exception:
+                        if self._mac_type_in_omnibox(term):
+                            return
             except Exception:
-                try:
-                    mac_activate(self.browser_mac)
-                    time.sleep(0.08)
-                    mac_focus_omnibox()
-                    time.sleep(0.05)
-                    mac_type_human(term)
-                    mac_press_return()
-                    self._first_search = False
+                if self._mac_type_in_omnibox(term):
                     return
-                except Exception:
-                    pass
-
+            # If everything above failed, fall through to Win/Linux branch to attempt generic behavior
         try:
             if self._first_search:
                 _focus_bing_box_win_linux()
@@ -553,7 +594,6 @@ class Automator:
                 pyautogui.press('enter')
                 self._first_search = False
                 return
-            # Results-page trick: any letter focuses the box, then Ctrl+A, type, Enter
             pyautogui.typewrite('a')
             time.sleep(0.05)
             pyautogui.hotkey('ctrl', 'a')
@@ -687,7 +727,7 @@ class MacGlobalEsc:
                 pass
             self.globalMonitor = None
 
-# Quartz event tap global ESC listener for macOS
+ # macOS global ESC via event tap
 class MacEventTapEsc:
     def __init__(self, callback):
         self.callback = callback
@@ -763,61 +803,7 @@ class MacEventTapEsc:
         except Exception:
             pass
 
-# Replacement: Ctrl+Alt+Q hotkey for Windows
-class WindowsCtrlAltQHotkey:
-    def __init__(self, callback):
-        self.callback = callback
-        self.thread = None
-        self.thread_id = None
-        self._stop = threading.Event()
-        self._ready = threading.Event()
-        self._ok = False
-
-    def start(self):
-        if not IS_WIN:
-            return False, "Windows only"
-        import ctypes
-        from ctypes import wintypes
-        user32 = ctypes.windll.user32
-        kernel32 = ctypes.windll.kernel32
-        MOD_ALT = 0x0001
-        MOD_CONTROL = 0x0002
-        VK_Q = 0x51
-        WM_HOTKEY = 0x0312
-        HOTKEY_ID = 1
-        def loop():
-            self.thread_id = kernel32.GetCurrentThreadId()
-            ok = user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_Q)
-            self._ok = bool(ok)
-            self._ready.set()
-            if not ok:
-                return
-            msg = wintypes.MSG()
-            while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
-                if msg.message == WM_HOTKEY and msg.wParam == HOTKEY_ID:
-                    QTimer.singleShot(0, self.callback)
-                user32.TranslateMessage(ctypes.byref(msg))
-                user32.DispatchMessageW(ctypes.byref(msg))
-            user32.UnregisterHotKey(None, HOTKEY_ID)
-        self.thread = threading.Thread(target=loop, daemon=True)
-        self.thread.start()
-        self._ready.wait(1.0)
-        return (self._ok, "OK" if self._ok else "RegisterHotKey failed")
-
-    def stop(self):
-        if not IS_WIN:
-            return
-        try:
-            import ctypes
-            user32 = ctypes.windll.user32
-            WM_QUIT = 0x0012
-            self._stop.set()
-            if self.thread_id:
-                user32.PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0)
-        except Exception:
-            pass
-
-# WindowsLLCtrlAltQHook: fallback low-level hook for Ctrl+Alt+Q
+# WindowsLLCtrlAltSHook: low-level Ctrl+Alt+S fallback
 class WindowsLLCtrlAltSHook:
     def __init__(self, callback):
         self.callback = callback
@@ -922,77 +908,7 @@ class WindowsLLCtrlAltSHook:
         except Exception:
             pass
 
-class WindowsGlobalEsc:
-    def __init__(self, callback):
-        self.callback = callback
-        self.hooked = None
-        self.thread = None
-        self.thread_id = None
-        self._stop = threading.Event()
-        self._ready = threading.Event()
-        self._ok = False
-
-    def start(self):
-        if not IS_WIN:
-            return False, "Windows only"
-        try:
-            import ctypes
-            from ctypes import wintypes
-        except Exception as e:
-            return False, str(e)
-        user32 = ctypes.windll.user32
-        kernel32 = ctypes.windll.kernel32
-        WH_KEYBOARD_LL = 13
-        WM_KEYDOWN = 0x0100
-        WM_SYSKEYDOWN = 0x0104
-        VK_ESCAPE = 0x1B
-
-        ULONG_PTR = getattr(wintypes, "ULONG_PTR", ctypes.c_size_t)
-        LRESULT = getattr(wintypes, "LRESULT", ctypes.c_ssize_t)
-        WPARAM = getattr(wintypes, "WPARAM", ctypes.c_size_t)
-        LPARAM = getattr(wintypes, "LPARAM", ctypes.c_ssize_t)
-        class KBDLLHOOKSTRUCT(ctypes.Structure):
-            _fields_ = [("vkCode", wintypes.DWORD),
-                        ("scanCode", wintypes.DWORD),
-                        ("flags", wintypes.DWORD),
-                        ("time", wintypes.DWORD),
-                        ("dwExtraInfo", ULONG_PTR)]
-        LowLevelKeyboardProc = ctypes.WINFUNCTYPE(LRESULT, ctypes.c_int, WPARAM, LPARAM)
-
-        @LowLevelKeyboardProc
-        def hook_proc(nCode, wParam, lParam):
-            try:
-                if nCode >= 0 and (wParam == WM_KEYDOWN or wParam == WM_SYSKEYDOWN):
-                    kb = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
-                    if kb.vkCode == VK_ESCAPE:
-                        QTimer.singleShot(0, self.callback)
-            except Exception:
-                pass
-            return user32.CallNextHookEx(self.hooked, nCode, wParam, lParam)
-
-        self.hook_proc = hook_proc
-
-        def loop():
-            self.thread_id = kernel32.GetCurrentThreadId()
-            self.hooked = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self.hook_proc, kernel32.GetModuleHandleW(None), 0)
-            self._ok = bool(self.hooked)
-            self._ready.set()
-            if not self.hooked:
-                return
-            msg = wintypes.MSG()
-            while not self._stop.is_set() and user32.GetMessageW(ctypes.byref(msg), None, 0, 0) != 0:
-                user32.TranslateMessage(ctypes.byref(msg))
-                user32.DispatchMessageW(ctypes.byref(msg))
-            if self.hooked:
-                user32.UnhookWindowsHookEx(self.hooked)
-                self.hooked = None
-
-        self.thread = threading.Thread(target=loop, daemon=True)
-        self.thread.start()
-        self._ready.wait(1.0)
-        return (self._ok, "OK" if self._ok else "Hook failed")
-
-# --- WindowsPynputCtrlAltQ ---
+# WindowsPynputCtrlAltS
 
 class WindowsPynputCtrlAltS:
     def __init__(self, callback):
@@ -1072,7 +988,6 @@ class GradientWidget(QWidget):
         base.setColorAt(0.5, QColor("#1e3a8a"))
         base.setColorAt(1.0, QColor("#1d4ed8"))
         painter.fillRect(self.rect(), base)
-        from PySide6.QtGui import QRadialGradient
         highlight = QRadialGradient(self.width()/2, self.height()*0.08, self.height()*0.7)
         highlight.setColorAt(0.0, QColor(255,255,255,38))
         highlight.setColorAt(1.0, QColor(255,255,255,0))
@@ -1282,40 +1197,26 @@ class MainWindow(QMainWindow):
         left_lay = QHBoxLayout(self.left); left_lay.setContentsMargins(0,0,0,0); left_lay.setSpacing(0)
         right_lay = QHBoxLayout(self.right); right_lay.setContentsMargins(0,0,0,0); right_lay.setSpacing(0)
 
+        self.remember_chk = QCheckBox()
+        self.remember_chk.setObjectName("rememberTop")
+        self.remember_chk.setToolTip("Remember login choice")
+        self.remember_chk.setCursor(Qt.PointingHandCursor)
+        self.remember_chk.setFixedSize(36, 36)
+        self.remember_chk.setStyleSheet("""
+            QCheckBox#rememberTop { background: rgba(0,0,0,90); border-radius: 10px; }
+            QCheckBox#rememberTop::indicator { width:18px; height:18px; margin:9px; border-radius:4px;
+                border:1px solid rgba(255,255,255,70); background: rgba(255,255,255,16); }
+            QCheckBox#rememberTop::indicator:hover { background: rgba(255,255,255,28); }
+            QCheckBox#rememberTop::indicator:checked {
+                border:1px solid #8be9a5;
+                background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #34d399, stop:1 #0ea472);
+            }
+        """)
+
         if IS_WIN:
             left_lay.addWidget(self.pin_btn, 0, Qt.AlignLeft | Qt.AlignVCenter)
-            self.remember_chk = QCheckBox()
-            self.remember_chk.setObjectName("rememberTop")
-            self.remember_chk.setToolTip("Remember login choice")
-            self.remember_chk.setCursor(Qt.PointingHandCursor)
-            self.remember_chk.setFixedSize(36, 36)
-            self.remember_chk.setStyleSheet("""
-                QCheckBox#rememberTop { background: rgba(0,0,0,90); border-radius: 10px; }
-                QCheckBox#rememberTop::indicator { width:18px; height:18px; margin:9px; border-radius:4px;
-                    border:1px solid rgba(255,255,255,70); background: rgba(255,255,255,16); }
-                QCheckBox#rememberTop::indicator:hover { background: rgba(255,255,255,28); }
-                QCheckBox#rememberTop::indicator:checked {
-                    border:1px solid #8be9a5;
-                    background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #34d399, stop:1 #0ea472);
-                }
-            """)
             right_lay.addWidget(self.remember_chk, 0, Qt.AlignRight | Qt.AlignVCenter)
         else:
-            self.remember_chk = QCheckBox()
-            self.remember_chk.setObjectName("rememberTop")
-            self.remember_chk.setToolTip("Remember login choice")
-            self.remember_chk.setCursor(Qt.PointingHandCursor)
-            self.remember_chk.setFixedSize(36, 36)
-            self.remember_chk.setStyleSheet("""
-                QCheckBox#rememberTop { background: rgba(0,0,0,90); border-radius: 10px; }
-                QCheckBox#rememberTop::indicator { width:18px; height:18px; margin:9px; border-radius:4px;
-                    border:1px solid rgba(255,255,255,70); background: rgba(255,255,255,16); }
-                QCheckBox#rememberTop::indicator:hover { background: rgba(255,255,255,28); }
-                QCheckBox#rememberTop::indicator:checked {
-                    border:1px solid #8be9a5;
-                    background: qlineargradient(x1:0,y1:0,x2:0,y2:1, stop:0 #34d399, stop:1 #0ea472);
-                }
-            """)
             left_lay.addWidget(self.remember_chk, 0, Qt.AlignLeft | Qt.AlignVCenter)
             right_lay.addWidget(self.pin_btn, 0, Qt.AlignRight | Qt.AlignVCenter)
 
@@ -1480,6 +1381,25 @@ class MainWindow(QMainWindow):
             settings.setValue("mac_perm_prompt_shown", "1")
             break
 
+    def _show_mac_permissions_dialog(self):
+        box = QMessageBox(self)
+        while True:
+            box.setIcon(QMessageBox.Warning)
+            box.setWindowTitle("Setup macOS permissions")
+            box.setText("Enable Accessibility, Input Monitoring, and Automation for your Terminal/VS Code or the packaged app in System Settings → Privacy & Security.")
+            btn_acc = box.addButton("Open Accessibility", QMessageBox.ActionRole)
+            btn_inp = box.addButton("Open Input Monitoring", QMessageBox.ActionRole)
+            btn_auto = box.addButton("Open Automation", QMessageBox.ActionRole)
+            btn_done = box.addButton("Done", QMessageBox.AcceptRole)
+            box.exec()
+            if box.clickedButton() is btn_acc:
+                mac_open_accessibility(); box = QMessageBox(self); continue
+            if box.clickedButton() is btn_inp:
+                mac_open_input_monitoring(); box = QMessageBox(self); continue
+            if box.clickedButton() is btn_auto:
+                mac_open_automation(); box = QMessageBox(self); continue
+            break
+
     def _ensure_linux_requirements(self, msg):
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Warning)
@@ -1593,7 +1513,11 @@ class MainWindow(QMainWindow):
         QTimer.singleShot(0, self._balance_side_widths)
 
     def on_start(self):
-        force_prompt = bool(QApplication.keyboardModifiers() & Qt.ShiftModifier)
+        mods = QApplication.keyboardModifiers()
+        if IS_MAC and (mods & Qt.AltModifier):
+            self._show_mac_permissions_dialog()
+            return
+        force_prompt = bool(mods & Qt.ShiftModifier)
         settings = QSettings("AutoBingSearch", "App")
 
         remember_ui = self.remember_chk.isChecked()

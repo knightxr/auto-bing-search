@@ -20,9 +20,9 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
   * **Windows:** `Ctrl+Alt+S` — system hotkey with two fallbacks.
   * **Linux:** `Esc` via `pynput`.
 * **Focus recovery**: before every search the app refocuses the browser window.
-* **Search box first, address bar if needed**: types into Bing’s on-page box; if that can’t be focused, it focuses the address bar and types the query like normal text.
+* **Search box first, address bar if needed**: types into Bing’s on-page box. If that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
-* **Single file** distribution on Windows & Linux; **Universal 2** app on macOS.
+* **Single file** distribution on Windows & Linux. **Universal 2** app on macOS.
 
 ---
 
@@ -48,20 +48,20 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 
 ## How it works (per OS)
 
-* **macOS**
+**macOS**
 
   * Activates your browser, focuses Bing’s search box, types human-like, and presses Return.
   * If the box can’t be focused, it hits **Cmd+L**, types the query in the address bar, and presses Return.
   * On first launch, a one-time permissions helper appears with buttons for **Accessibility**, **Input Monitoring**, and **Automation**.
   * Need it again later? Hold **Option** and click **Start** to reopen the helper.
 
-* **Windows**
+**Windows**
 
   * Global stop: **Ctrl+Alt+S** (left keys recommended). Registered via `RegisterHotKey` with low-level and pynput fallbacks.
-  * Types into Bing’s box; if that fails, uses **Ctrl+L** to type in the address bar and presses Enter.
+  * Types into Bing’s box. If that fails, uses **Ctrl+L** to type in the address bar and presses Enter.
   * The app attempts to bring a major browser (Edge/Chrome/Firefox/Brave/Opera) to the foreground before each search.
 
-* **Linux**
+**Linux**
 
   * Uses `pyautogui` for typing; `Esc` stops via `pynput`.
   * X11 recommended (Wayland may block automation). If available, `wmctrl`/`xdotool` help focusing the browser.
@@ -140,7 +140,7 @@ python auto_bing_search.py
    * **Sign in** opens Bing’s sign-in page.
    * Check **Remember** to skip the prompt next time (Shift+Start always shows it).
 3. Set a count with the stepper and click **Start**.
-4. A **5-second** countdown appears; the search loop starts.
+4. A **5-second** countdown appears, then the search loop starts.
 5. During the run:
 
    * **Pause** toggles pause/resume.

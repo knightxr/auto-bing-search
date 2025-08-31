@@ -1,7 +1,7 @@
 [Setup]
 AppId={{8FBB3B13-8E5E-4E93-B0B9-9A3A9D6D9B21}}
 AppName=Auto Bing Search
-AppVersion=1.2.0
+AppVersion=1.2.1
 DefaultDirName={userpf}\Auto Bing Search
 DefaultGroupName=Auto Bing Search
 PrivilegesRequired=lowest

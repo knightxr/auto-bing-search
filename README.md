@@ -22,8 +22,27 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Focus recovery**: before every search the app refocuses the browser window.
 * **Search box first, address bar if needed**: types into Bing’s on-page box; if that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
-* **Permissions quick-open on macOS**: hold **Option** and click **Start** to open the helper any time.
 * **Single file** distribution on Windows & Linux; **Universal 2** app on macOS.
+
+---
+
+## Install
+
+**macOS**
+
+1. Open the DMG and drag **Auto Bing Search.app** to **Applications**.
+2. First run: right-click the app → **Open**.
+3. Allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*.
+
+**Windows**
+
+1. Run the installer and follow the prompts.
+2. If SmartScreen warns about an unknown publisher, choose **More info → Run anyway**.
+
+**Linux**
+
+1. Extract the tarball and run `./auto-bing-search`.
+2. Use an **Xorg** session for best automation support.
 
 ---
 
@@ -138,14 +157,18 @@ python auto_bing_search.py
 
 ## Troubleshooting
 
-* **macOS: stop hotkey not working**
-  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. You can also hold **Option** and click **Start** to open those panes.
-* **Windows: Ctrl+Alt+S doesn’t trigger**
-  Make sure no other app uses that hotkey or try running the app as Administrator.
-* **Linux: automation not working**
-  Use an **Xorg** session. Install `wmctrl` and `xdotool` for better focusing (see packages above).
-* **Search goes to the URL bar**
-  That’s the intended fallback when the on-page box can’t be focused; it still types the query like normal text and presses Enter. **Bing must be your browser’s default search engine for this fallback to search Bing; otherwise your default engine will be used.**
+**macOS: stop hotkey not working**
+*  Open the app from `/Applications` and allow **Accessibility** and **Input Monitoring** (and **Automation**) in *System Settings → Privacy & Security*. You can also hold **Option** and click **Start** to open those panes.
+
+**Windows: Ctrl+Alt+S doesn’t trigger**
+*  Make sure no other app uses that hotkey or try running the app as Administrator.
+
+**Linux: automation not working**
+*  Use an **Xorg** session. Install `wmctrl` and `xdotool` for better focusing (see packages above).
+
+**Search goes to the URL bar**
+*  That’s the intended fallback when the on-page box can’t be focused. It still types the query like normal text and presses Enter.
+*  **Bing must be your browser’s default search engine for this fallback to search Bing, otherwise your default engine will be used.**
 
 ---
 

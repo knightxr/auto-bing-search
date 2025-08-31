@@ -454,6 +454,21 @@ class Automator:
         except Exception:
             return None
 
+    def _mac_navigation_success(self, prev_url: str | None, timeout: float = 3.0) -> bool:
+        start = time.time()
+        ok = False
+        while time.time() - start < timeout:
+            curr = self._mac_get_front_url()
+            if curr:
+                if prev_url and curr != prev_url:
+                    ok = True
+                    break
+                if "bing.com/search" in curr:
+                    ok = True
+                    break
+            time.sleep(0.2)
+        return ok
+
     def _mac_type_in_omnibox(self, term: str) -> bool:
         try:
             mac_activate(self.browser_mac)
@@ -560,9 +575,7 @@ class Automator:
                         mac_type_human(term)
                         mac_press_return()
                         self._first_search = False
-                        time.sleep(0.8)
-                        curr = self._mac_get_front_url()
-                        if prev_url and curr and prev_url == curr:
+                        if not self._mac_navigation_success(prev_url, timeout=3.0):
                             self._mac_type_in_omnibox(term)
                         return
                     else:
@@ -575,9 +588,7 @@ class Automator:
                         _osa('tell application "System Events" to keystroke "a" using command down')
                         mac_type_human(term)
                         mac_press_return()
-                        time.sleep(0.6)
-                        curr = self._mac_get_front_url()
-                        if prev_url and curr and prev_url == curr:
+                        if not self._mac_navigation_success(prev_url, timeout=3.0):
                             self._mac_type_in_omnibox(term)
                         return
                     except Exception:

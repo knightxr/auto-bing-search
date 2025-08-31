@@ -1,0 +1,70 @@
+('/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing Search/build/Auto '
+ 'Bing Search/Auto Bing Search',
+ False,
+ False,
+ True,
+ ['/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+  'Search/assets/app.icns'],
+ None,
+ False,
+ False,
+ None,
+ True,
+ False,
+ 'x86_64',
+ None,
+ None,
+ '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing Search/build/Auto '
+ 'Bing Search/Auto Bing Search.pkg',
+ [('pyi-contents-directory _internal', '', 'OPTION'),
+  ('PYZ-00.pyz',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/build/Auto Bing Search/PYZ-00.pyz',
+   'PYZ'),
+  ('lib-dynload/_struct.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_struct.cpython-312-darwin.so',
+   'EXTENSION'),
+  ('lib-dynload/zlib.cpython-312-darwin.so',
+   '/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/zlib.cpython-312-darwin.so',
+   'EXTENSION'),
+  ('struct',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/build/Auto Bing Search/localpycs/struct.pyc',
+   'PYMODULE'),
+  ('pyimod01_archive',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/build/Auto Bing Search/localpycs/pyimod01_archive.pyc',
+   'PYMODULE'),
+  ('pyimod02_importers',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/build/Auto Bing Search/localpycs/pyimod02_importers.pyc',
+   'PYMODULE'),
+  ('pyimod03_ctypes',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/build/Auto Bing Search/localpycs/pyimod03_ctypes.pyc',
+   'PYMODULE'),
+  ('pyiboot01_bootstrap',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv_x86/lib/python3.12/site-packages/PyInstaller/loader/pyiboot01_bootstrap.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv_x86/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('pyi_rth_pyside6',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv_x86/lib/python3.12/site-packages/PyInstaller/hooks/rthooks/pyi_rth_pyside6.py',
+   'PYSOURCE'),
+  ('auto_bing_search',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/auto_bing_search.py',
+   'PYSOURCE')],
+ [],
+ False,
+ False,
+ 1756679589,
+ [('runw',
+   '/Users/jacques/Documents/GitHub/auto-bing-search/Auto Bing '
+   'Search/.venv_x86/lib/python3.12/site-packages/PyInstaller/bootloader/Darwin-64bit/runw',
+   'EXECUTABLE')],
+ '/Library/Frameworks/Python.framework/Versions/3.12/Python')

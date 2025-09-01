@@ -4,7 +4,7 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 
 <p align="center">
   <a href="https://knightxr.github.io/auto-bing-search/" target="_blank" rel="noopener">
-    <img src="https://img.shields.io/badge/Live%20Demo-Open%20Site-blue?style=for-the-badge" alt="Live Demo">
+    <img src="https://img.shields.io/badge/Download-Open%20Site-blue?style=for-the-badge" alt="Live Demo">
   </a>
 </p>
 
@@ -29,13 +29,6 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Search box first, address bar if needed**: types into Bing’s on-page box. If that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
 * **Single file** distribution on Windows & Linux. **Universal 2** app on macOS.
-
----
-
-## Demo
-
-Explore the interface and behavior on the **live demo site**:
-**[https://knightxr.github.io/auto-bing-search/](https://knightxr.github.io/auto-bing-search/)**
 
 ---
 

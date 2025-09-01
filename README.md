@@ -3,6 +3,12 @@
 A tiny cross-platform desktop app that opens your browser and runs a series of Bing searches using a curated word list. Built with **PySide6** and a minimal, modern UI.
 
 <p align="center">
+  <a href="https://knightxr.github.io/auto-bing-search/" target="_blank" rel="noopener">
+    <img src="https://img.shields.io/badge/Live%20Demo-Open%20Site-blue?style=for-the-badge" alt="Live Demo">
+  </a>
+</p>
+
+<p align="center">
   <img src="docs/screenshot.png" alt="Auto Bing Search screenshot" width="650">
 </p>
 
@@ -23,6 +29,13 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 * **Search box first, address bar if needed**: types into Bing’s on-page box. If that can’t be focused, it focuses the address bar and types the query like normal text.
 * **Edge preference** (falls back to default browser).
 * **Single file** distribution on Windows & Linux. **Universal 2** app on macOS.
+
+---
+
+## Demo
+
+Explore the interface and behavior on the **live demo site**:
+**[https://knightxr.github.io/auto-bing-search/](https://knightxr.github.io/auto-bing-search/)**
 
 ---
 
@@ -50,22 +63,22 @@ A tiny cross-platform desktop app that opens your browser and runs a series of B
 
 **macOS**
 
-  * Activates your browser, focuses Bing’s search box, types human-like, and presses Return.
-  * If the box can’t be focused, it hits **Cmd+L**, types the query in the address bar, and presses Return.
-  * On first launch, a one-time permissions helper appears with buttons for **Accessibility**, **Input Monitoring**, and **Automation**.
-  * Need it again later? Hold **Option** and click **Start** to reopen the helper.
+* Activates your browser, focuses Bing’s search box, types human-like, and presses Return.
+* If the box can’t be focused, it hits **Cmd+L**, types the query in the address bar, and presses Return.
+* On first launch, a one-time permissions helper appears with buttons for **Accessibility**, **Input Monitoring**, and **Automation**.
+* Need it again later? Hold **Option** and click **Start** to reopen the helper.
 
 **Windows**
 
-  * Global stop: **Ctrl+Alt+S** (left keys recommended). Registered via `RegisterHotKey` with low-level and pynput fallbacks.
-  * Types into Bing’s box. If that fails, uses **Ctrl+L** to type in the address bar and presses Enter.
-  * The app attempts to bring a major browser (Edge/Chrome/Firefox/Brave/Opera) to the foreground before each search.
+* Global stop: **Ctrl+Alt+S** (left keys recommended). Registered via `RegisterHotKey` with low-level and pynput fallbacks.
+* Types into Bing’s box. If that fails, uses **Ctrl+L** to type in the address bar and presses Enter.
+* The app attempts to bring a major browser (Edge/Chrome/Firefox/Brave/Opera) to the foreground before each search.
 
 **Linux**
 
-  * Uses `pyautogui` for typing; `Esc` stops via `pynput`.
-  * X11 recommended (Wayland may block automation). If available, `wmctrl`/`xdotool` help focusing the browser.
-  * Falls back to **Ctrl+L** → address bar typing when the on-page box can’t be focused.
+* Uses `pyautogui` for typing; `Esc` stops via `pynput`.
+* X11 recommended (Wayland may block automation). If available, `wmctrl`/`xdotool` help focusing the browser.
+* Falls back to **Ctrl+L** → address bar typing when the on-page box can’t be focused.
 
 ---
 
